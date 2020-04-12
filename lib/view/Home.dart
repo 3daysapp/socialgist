@@ -1,13 +1,9 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
-import 'package:socialgist/model/ApiUsage.dart';
 import 'package:socialgist/model/User.dart';
+import 'package:socialgist/provider/AuthUserProvider.dart';
 import 'package:socialgist/util/WaitingMessage.dart';
-
-import '../util/Config.dart';
 
 import '../widgets/SocialGistLogo.dart';
 
@@ -41,45 +37,9 @@ class _HomeState extends State<Home> {
   ///
   ///
   void _loadData() async {
-    String token = Config().token;
-    String rootEndpoint = Config().rootEndpoint;
-    String modelEndpoint = 'user';
+    AuthUserProvider provider = AuthUserProvider();
 
-    Response response = await get(
-      '$rootEndpoint/$modelEndpoint',
-      headers: {
-        // https://developer.github.com/v3/#current-version
-        'Accept': 'application/vnd.github.v3+json',
-        // https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/#3-use-the-access-token-to-access-the-api
-        'Authorization': 'token $token',
-        // https://developer.github.com/v3/#user-agent-required
-        'User-Agent': 'SocialGist',
-      },
-    );
-
-    print('Responde: ${response.statusCode}');
-
-    // TODO - Tratamento de erros.
-
-    Map<String, String> headers = response.headers;
-
-    ApiUsage usage = ApiUsage(
-      limit: headers['x-ratelimit-limit'],
-      remaining: headers['x-ratelimit-remaining'],
-      reset: headers['x-ratelimit-reset'],
-    );
-
-    print(usage);
-
-    // debugPrint(response.body, wrapWidth: 80);
-
-    Map<String, dynamic> body = json.decode(response.body);
-
-    User me = User.fromJson(body);
-
-    Map<String, dynamic> newBody = me.toJson();
-
-    newBody.forEach((key, value) => print('$key: $value'));
+    User me = await provider.getObject();
 
     _controller.add(me);
   }

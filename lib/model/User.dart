@@ -1,9 +1,9 @@
-import 'Plan.dart';
+import 'AbstractModel.dart';
 
 ///
 /// https://developer.github.com/v3/users/
 ///
-class User {
+class User extends AbstractModel<User> {
   String login;
   int id;
   String nodeId;
@@ -42,6 +42,10 @@ class User {
   int collaborators;
   bool twoFactorAuthentication;
   Plan plan;
+
+  ///
+  ///
+  ///
 
   User({
     this.login,
@@ -82,9 +86,12 @@ class User {
     this.collaborators,
     this.twoFactorAuthentication,
     this.plan,
-  });
+  }) : super();
 
-  User.fromJson(Map<String, dynamic> json) {
+  ///
+  ///
+  ///
+  User.fromJson(Map<String, dynamic> json) : super.fromJson(json) {
     login = json['login'];
     id = json['id'];
     nodeId = json['node_id'];
@@ -125,6 +132,10 @@ class User {
     plan = json['plan'] != null ? Plan.fromJson(json['plan']) : null;
   }
 
+  ///
+  ///
+  ///
+  @override
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
     data['login'] = login;
@@ -167,6 +178,58 @@ class User {
     if (plan != null) {
       data['plan'] = plan.toJson();
     }
+    return data;
+  }
+
+  ///
+  ///
+  ///
+  @override
+  User fromJson(Map<String, dynamic> json) {
+    return User.fromJson(json);
+  }
+}
+
+///
+/// https://developer.github.com/v3/users/
+///
+class Plan {
+  String name;
+  int space;
+  int privateRepos;
+  int collaborators;
+
+  ///
+  ///
+  ///
+  Plan({
+    this.name,
+    this.space,
+    this.privateRepos,
+    this.collaborators,
+  });
+
+  ///
+  ///
+  ///
+  Plan.fromJson(Map<String, dynamic> json) {
+    name = json['name'];
+    space = json['space'];
+    privateRepos = json['private_repos'];
+    collaborators = json['collaborators'];
+    privateRepos = json['private_repos'];
+  }
+
+  ///
+  ///
+  ///
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = {};
+    data['name'] = name;
+    data['space'] = space;
+    data['private_repos'] = privateRepos;
+    data['collaborators'] = collaborators;
+    data['private_repos'] = privateRepos;
     return data;
   }
 }
