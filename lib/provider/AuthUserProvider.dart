@@ -9,5 +9,9 @@ class AuthUserProvider extends AbstractProvider<User> {
   ///
   ///
   ///
-  AuthUserProvider() : super(endpoint: 'user', model: User());
+  AuthUserProvider()
+      : super(
+          endpoint: 'user',
+          model: User(),
+        );
 }

@@ -1,3 +1,5 @@
+import 'package:socialgist/model/ApiUsage.dart';
+
 class Config {
   static final Config _singleton = Config._internal();
 
@@ -31,4 +33,6 @@ class Config {
       Uri.parse('https://www.strategiccore.com.br/api/socialgist/oauth2-code');
 
   String token;
+
+  ApiUsage apiUsage = ApiUsage(limit: '1', remaining: '0');
 }

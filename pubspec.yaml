@@ -4,7 +4,7 @@ description: Socialgist.
 version: 0.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.5.2 <3.0.0"
 
 dependencies:
   flutter:
@@ -24,6 +24,8 @@ dependencies:
   google_fonts: 0.4.0
   # https://pub.dev/packages/font_awesome_flutter
   font_awesome_flutter: 8.8.1
+  # https://pub.dev/packages/flutter_highlight
+  flutter_highlight: 0.6.0
 
 dev_dependencies:
   flutter_test:

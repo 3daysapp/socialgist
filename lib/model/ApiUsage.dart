@@ -19,11 +19,15 @@ class ApiUsage {
   ApiUsage({
     @required String limit,
     @required String remaining,
-    @required String reset,
+    String reset,
   }) {
     _limit = int.tryParse(limit);
     _remaining = int.tryParse(remaining);
-    _reset = DateTime.fromMillisecondsSinceEpoch(int.tryParse(reset) * 1000);
+    if (reset != null && reset.isNotEmpty) {
+      _reset = DateTime.fromMillisecondsSinceEpoch(int.tryParse(reset) * 1000);
+    } else {
+      _reset = DateTime.now();
+    }
   }
 
   ///

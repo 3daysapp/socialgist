@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:socialgist/util/Config.dart';
 
 import '../view/Profile.dart';
 import '../widgets/SocialGistLogo.dart';
@@ -47,10 +50,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  FaIcon(FontAwesomeIcons.githubAlt),
+                  FaIcon(FontAwesomeIcons.solidCompass),
                   Padding(
                     padding: const EdgeInsets.only(left: 8.0),
-                    child: Text('Gists'),
+                    child: Text('Explorar'),
                   )
                 ],
               ),
@@ -70,6 +73,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             ),
           ],
         ),
+        centerTitle: true,
       ),
       body: TabBarView(
         controller: _tabController,
@@ -77,6 +81,22 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           Gists(),
           Profile(),
         ],
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Container(
+          child: StreamBuilder<double>(
+              initialData: 0,
+              stream: Stream.periodic(
+                Duration(seconds: 5),
+                (i) => Config().apiUsage.percent,
+              ),
+              builder: (context, snapshot) {
+                return LinearProgressIndicator(
+                  value: snapshot.data,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.teal),
+                );
+              }),
+        ),
       ),
     );
   }

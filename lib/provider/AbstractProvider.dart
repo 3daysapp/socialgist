@@ -13,12 +13,30 @@ abstract class AbstractProvider<T extends AbstractModel> {
   /// Note that page numbering is 1-based and that omitting the ?page parameter will return the first page.
   int _page;
 
+  int _first;
+  int _prev;
+  int _next;
+  int _last;
+
   /// up to 100
   int _perPage;
 
   String _endpoint;
 
+  String _path = '';
+
   T _model;
+
+  final Map<String, String> _headers = Map.unmodifiable({
+    /// https://developer.github.com/v3/#current-version
+    'Accept': 'application/vnd.github.v3+json',
+
+    /// https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/#3-use-the-access-token-to-access-the-api
+    'Authorization': 'token ${Config().token}',
+
+    /// https://developer.github.com/v3/#user-agent-required
+    'User-Agent': 'SocialGist',
+  });
 
   ///
   ///
@@ -38,24 +56,45 @@ abstract class AbstractProvider<T extends AbstractModel> {
   ///
   ///
   ///
-  Future<dynamic> _internalGet() async {
-    String token = Config().token;
-    String rootEndpoint = Config().rootEndpoint;
+  bool get hasNext =>
+      _next != null && _next > 0 && _last != null && _next < _last;
 
-    Uri uri = Uri.parse('$rootEndpoint/$_endpoint');
+  ///
+  ///
+  ///
+  Uri _internalUri(List<String> paths) {
+    if (paths.isNotEmpty) {
+      _path = '/' + paths.join('/');
+    }
 
-    // TODO - Adicionar paginação.
+    Uri uri = Uri.parse('${Config().rootEndpoint}/$_endpoint$_path');
 
+    Map<String, String> queryParameters = {};
+
+    if (_page != null && _page > 0) {
+      queryParameters['page'] = _page.toString();
+    }
+
+    if (_perPage != null && _perPage > 0) {
+      queryParameters['per_page'] = _perPage.toString();
+    }
+
+    if (queryParameters.isNotEmpty) {
+      uri = uri.replace(queryParameters: queryParameters);
+    }
+
+    print('Uri: $uri');
+
+    return uri;
+  }
+
+  ///
+  ///
+  ///
+  Future<dynamic> _internalGet(List<String> paths) async {
     Response response = await get(
-      uri,
-      headers: {
-        // https://developer.github.com/v3/#current-version
-        'Accept': 'application/vnd.github.v3+json',
-        // https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/#3-use-the-access-token-to-access-the-api
-        'Authorization': 'token $token',
-        // https://developer.github.com/v3/#user-agent-required
-        'User-Agent': 'SocialGist',
-      },
+      _internalUri(paths),
+      headers: _headers,
     );
 
     print('Responde: ${response.statusCode}');
@@ -64,44 +103,110 @@ abstract class AbstractProvider<T extends AbstractModel> {
 
     Map<String, String> headers = response.headers;
 
-    print('Headers:');
-    headers.forEach((key, value) => print('$key => $value'));
+//    print('Headers:');
+//    headers.forEach((key, value) => print('$key => $value'));
 
-    ApiUsage usage = ApiUsage(
+    Config().apiUsage = ApiUsage(
       limit: headers['x-ratelimit-limit'],
       remaining: headers['x-ratelimit-remaining'],
       reset: headers['x-ratelimit-reset'],
     );
 
-    print(usage);
+    if (headers.containsKey('link')) {
+      RegExp regexp =
+      RegExp(r'<(?<url>https://api.github.com/.*?)>; rel="(?<name>.*?)"');
 
-    // debugPrint(response.body, wrapWidth: 120);
+      Iterable<RegExpMatch> matches = regexp.allMatches(headers['link']);
+
+      for (RegExpMatch match in matches) {
+        Uri uri = Uri.parse(match.namedGroup('url'));
+        int number = int.parse(uri.queryParameters['page']);
+        if (number != null) {
+          switch (match.namedGroup('name')) {
+            case 'first':
+              _first = number;
+              break;
+            case 'prev':
+              _prev = number;
+              break;
+            case 'next':
+              _next = number;
+              break;
+            case 'last':
+              _last = number;
+              break;
+          }
+        }
+      }
+    }
 
     var body = json.decode(response.body);
 
-    print('Body:');
+//    print('Body:');
 
-    if (body is Map) {
-      body.forEach((key, value) => print('$key => $value'));
-    } else if (body is List) {
-      body.forEach((item) => print('$item'));
-    }
+//    debugPrint(response.body, wrapWidth: 120);
+
+//    if (body is Map) {
+//      body.forEach((key, value) => print('$key => $value'));
+//    } else if (body is List) {
+//      body.forEach((item) => print('$item'));
+//    }
     return body;
   }
 
   ///
   ///
   ///
-  Future<T> getObject() async {
-    Map<String, dynamic> body = await _internalGet();
+  Future<T> getObject([List<String> paths = const []]) async {
+    Map<String, dynamic> body = await _internalGet(paths);
     return _model.fromJson(body);
   }
 
   ///
   ///
   ///
-  Future<List<T>> getList() async {
-    List<Map<String, dynamic>> list = await _internalGet();
-    return list.map((body) => _model.fromJson(body)).toList();
+  Future<List<T>> getList([List<String> paths = const []]) async {
+    _page = null;
+    List list = await _internalGet(paths);
+    return list.map((body) => (_model.fromJson(body)) as T).toList();
+  }
+
+  ///
+  ///
+  ///
+  Future<List<T>> getNextList([List<String> paths = const []]) async {
+    if (!hasNext) return null;
+    _page ??= 1;
+    _page++;
+    List list = await _internalGet(paths);
+    return list.map((body) => (_model.fromJson(body)) as T).toList();
+  }
+
+  ///
+  ///
+  ///
+  Future<void> putEmpty([List<String> paths = const []]) async {
+    Map<String, String> headers = Map.from(_headers);
+
+    headers['Content-Length'] = '0';
+
+    Response response = await put(
+      _internalUri(paths),
+      headers: headers,
+    );
+
+    print('Response: ${response.statusCode}');
+  }
+
+  ///
+  ///
+  ///
+  Future<void> deleteEmpty([List<String> paths = const []]) async {
+    Response response = await put(
+      _internalUri(paths),
+      headers: _headers,
+    );
+
+    print('Response: ${response.statusCode}');
   }
 }

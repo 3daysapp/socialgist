@@ -5,6 +5,14 @@ import 'package:socialgist/model/User.dart';
 import 'package:socialgist/provider/AuthUserProvider.dart';
 import 'package:socialgist/util/WaitingMessage.dart';
 
+/*
+My Gists ??
+
+https://gist.github.com/edufolly/starred
+
+r'<a class="link-overlay" href="https://gist.github.com/(?<user>.*)/(?<gist>.*)">'
+ */
+
 ///
 ///
 ///
@@ -52,6 +60,8 @@ class _ProfileState extends State<Profile> {
         if (snapshot.hasData) {
           User me = snapshot.data;
 
+          print('ID: ${me.nodeId}');
+//
           List<Widget> widgets = [];
 
           if (me.avatarUrl != null && me.avatarUrl.isNotEmpty) {
@@ -119,8 +129,7 @@ class _ProfileState extends State<Profile> {
           Map<String, int> cards = {
             'Seguindo': me.following ?? 0,
             'Seguidores': me.followers ?? 0,
-            'Repositórios':
-            (me.publicRepos ?? 0) + (me.totalPrivateRepos ?? 0),
+            'Repositórios': (me.publicRepos ?? 0) + (me.totalPrivateRepos ?? 0),
             'Gists': (me.publicGists ?? 0) + (me.privateGists ?? 0),
           };
 
@@ -136,25 +145,25 @@ class _ProfileState extends State<Profile> {
                 children: cards.keys
                     .map(
                       (key) => Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        children: <Widget>[
-                          Spacer(),
-                          Text(
-                            '${cards[key]}',
-                            style: Theme.of(context).textTheme.headline2,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            children: <Widget>[
+                              Spacer(),
+                              Text(
+                                '${cards[key]}',
+                                style: Theme.of(context).textTheme.headline2,
+                              ),
+                              Spacer(),
+                              Text(
+                                key,
+                                style: Theme.of(context).textTheme.subtitle1,
+                              ),
+                            ],
                           ),
-                          Spacer(),
-                          Text(
-                            key,
-                            style: Theme.of(context).textTheme.subtitle1,
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
-                )
+                    )
                     .toList(),
               ),
             ),
