@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:socialgist/model/User.dart';
 import 'package:socialgist/provider/AuthUserProvider.dart';
 import 'package:socialgist/util/WaitingMessage.dart';
@@ -29,6 +30,9 @@ class Profile extends StatefulWidget {
 ///
 class _ProfileState extends State<Profile> {
   StreamController<User> _controller;
+
+  // Example of a color with opacity shared in some places
+  Color softWhite = Colors.white.withOpacity(0.5);
 
   ///
   ///
@@ -60,44 +64,97 @@ class _ProfileState extends State<Profile> {
         if (snapshot.hasData) {
           User me = snapshot.data;
 
-          print('ID: ${me.nodeId}');
-//
-          List<Widget> widgets = [];
+          List<Widget> profileInfoWidgets = [];
 
-          if (me.avatarUrl != null && me.avatarUrl.isNotEmpty) {
-            widgets.add(
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: CircleAvatar(
-                  backgroundColor: Colors.black54,
-                  backgroundImage: NetworkImage(me.avatarUrl),
-                  minRadius: 30.0,
-                  maxRadius: 80.0,
+          profileInfoWidgets.add(
+            Container(
+              margin: EdgeInsets.fromLTRB(15.0, 40.0, 15.0, 15.0),
+              child: Row(
+                children: [
+                  hasInfo(me.company)
+                      ? Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Icon(
+                          Icons.business,
+                          color: softWhite,
+                        ),
+                        SizedBox(height: 5.0),
+                        Text(
+                          me.company,
+                          style: Theme
+                              .of(context)
+                              .textTheme
+                              .subtitle1,
+                        ),
+                      ],
+                    ),
+                  )
+                      : Spacer(),
+                  hasInfo(me.avatarUrl)
+                      ? Expanded(
+
+                    /// CircleAvatar as a parent with a larger size and
+                    /// background color to create a border effect.
+                    child: CircleAvatar(
+                      backgroundColor: Theme
+                          .of(context)
+                          .accentColor,
+                      minRadius: 22.0,
+                      maxRadius: 52.0,
+                      child: CircleAvatar(
+                        backgroundColor: Colors.black54,
+                        backgroundImage: NetworkImage(me.avatarUrl),
+                        minRadius: 20.0,
+                        maxRadius: 50.0,
+                      ),
+                    ),
+                  )
+                      : Spacer(),
+                  hasInfo(me.location)
+                      ? Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Icon(
+                          Icons.location_on,
+                          color: softWhite,
+                        ),
+                        SizedBox(height: 5),
+                        Text(
+                          me.location,
+                          style: Theme
+                              .of(context)
+                              .textTheme
+                              .subtitle1,
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  )
+                      : Spacer(),
+                ],
+              ),
+            ),
+          );
+
+          profileInfoWidgets.add(
+            Padding(
+              padding: EdgeInsets.only(bottom: 2.0),
+              child: Text(
+                me.name ?? me.login,
+                style: GoogleFonts.openSans(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w700,
+                  color: softWhite,
                 ),
               ),
-            );
-          }
-
-          widgets.add(Padding(
-            padding: const EdgeInsets.only(bottom: 6.0),
-            child: Text(
-              me.name ?? me.login,
-              style: Theme.of(context).textTheme.headline5,
             ),
-          ));
+          );
 
-          if (me.company != null && me.company.isNotEmpty) {
-            widgets.add(Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: Text(
-                me.company,
-                style: Theme.of(context).textTheme.subtitle1,
-              ),
-            ));
-          }
-
-          if (me.email != null && me.email.isNotEmpty) {
-            widgets.add(Padding(
+          if (hasInfo(me.email)) {
+            profileInfoWidgets.add(Padding(
               padding: const EdgeInsets.all(4.0),
               child: Text(
                 me.email,
@@ -106,24 +163,27 @@ class _ProfileState extends State<Profile> {
             ));
           }
 
-          if (me.location != null && me.location.isNotEmpty) {
-            widgets.add(Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: Text(
-                me.location,
-                style: Theme.of(context).textTheme.subtitle1,
+          profileInfoWidgets.add(
+            Container(
+              width: 50,
+              margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
+              child: Divider(
+                height: 1,
+                color: Theme
+                    .of(context)
+                    .accentColor,
+                thickness: 1,
               ),
-            ));
-          }
+            ),
+          );
 
-          if (me.blog != null && me.blog.isNotEmpty) {
-            widgets.add(Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: Text(
+          if (hasInfo(me.blog)) {
+            profileInfoWidgets.add(
+              Text(
                 me.blog,
                 style: Theme.of(context).textTheme.subtitle1,
               ),
-            ));
+            );
           }
 
           Map<String, int> cards = {
@@ -133,34 +193,38 @@ class _ProfileState extends State<Profile> {
             'Gists': (me.publicGists ?? 0) + (me.privateGists ?? 0),
           };
 
-          widgets.add(
-            Padding(
-              padding: const EdgeInsets.all(16.0),
+          profileInfoWidgets.add(
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 25.0),
               child: GridView.count(
                 shrinkWrap: true,
                 crossAxisCount: 2,
                 childAspectRatio: 1,
-                mainAxisSpacing: 8.0,
-                crossAxisSpacing: 8.0,
+                mainAxisSpacing: 15.0,
+                crossAxisSpacing: 15.0,
                 children: cards.keys
                     .map(
                       (key) => Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            children: <Widget>[
-                              Spacer(),
-                              Text(
-                                '${cards[key]}',
-                                style: Theme.of(context).textTheme.headline2,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          '${cards[key]}',
+                          style: TextStyle(
+                            fontSize: 50.0,
+                            color: Theme
+                                .of(context)
+                                .accentColor,
                               ),
-                              Spacer(),
-                              Text(
-                                key,
-                                style: Theme.of(context).textTheme.subtitle1,
-                              ),
-                            ],
-                          ),
+                        ),
+                        Text(
+                          key,
+                          style: Theme
+                              .of(context)
+                              .textTheme
+                              .subtitle1,
+                        ),
+                      ],
                         ),
                       ),
                     )
@@ -172,7 +236,7 @@ class _ProfileState extends State<Profile> {
           return SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: widgets,
+              children: profileInfoWidgets,
             ),
           );
         }
@@ -182,6 +246,13 @@ class _ProfileState extends State<Profile> {
         return WaitingMessage('Aguarde...');
       },
     );
+  }
+
+  ///
+  ///
+  ///
+  bool hasInfo(String info) {
+    return info != null && info.isNotEmpty;
   }
 
   ///
