@@ -39,10 +39,7 @@ class _GistsState extends State<Gists> {
     _scrollController.addListener(() {
       if (_scrollController.position.pixels >=
           _scrollController.position.maxScrollExtent -
-              (MediaQuery
-                  .of(context)
-                  .size
-                  .height * 0.4)) {
+              (MediaQuery.of(context).size.height * 0.4)) {
         if (!_loading && _provider.hasNext) {
           _nextData();
         }
@@ -93,11 +90,8 @@ class _GistsState extends State<Gists> {
               child: ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 controller: _scrollController,
-                children: _gists.values
-                    .map(
-                      (gist) => GistWidget(gist),
-                )
-                    .toList(),
+                children:
+                    _gists.values.map((gist) => GistWidget(gist)).toList(),
               ),
             ),
             Visibility(
@@ -172,7 +166,7 @@ class _GistWidgetState extends State<GistWidget> with TickerProviderStateMixin {
                   children: <Widget>[
                     CircleAvatar(
                       backgroundImage:
-                      NetworkImage(widget.gist.owner.avatarUrl),
+                          NetworkImage(widget.gist.owner.avatarUrl),
                       backgroundColor: Colors.black54,
                       radius: 24.0,
                     ),
@@ -205,12 +199,8 @@ class _GistWidgetState extends State<GistWidget> with TickerProviderStateMixin {
                       PublicGistProvider provider = PublicGistProvider();
                       // ignore: unawaited_futures
                       provider.putEmpty([widget.gist.id, 'star']);
-                      await _controller
-                          .forward()
-                          .orCancel;
-                      await _controller
-                          .reverse()
-                          .orCancel;
+                      await _controller.forward().orCancel;
+                      await _controller.reverse().orCancel;
                     } on TickerCanceled {
                       // the animation got canceled, probably because we were disposed
                     }
@@ -247,23 +237,23 @@ class GistContent extends StatelessWidget {
   ///
   GistContent(this.gist, this.controller, {Key key})
       : opacity = Tween<double>(
-    begin: 0.0,
-    end: 1.0,
-  ).animate(
-    CurvedAnimation(
-      parent: controller,
-      curve: Interval(
-        0.0,
-        0.5,
-        curve: Curves.easeIn,
-      ),
-      reverseCurve: Interval(
-        0.0,
-        0.2,
-        curve: Curves.easeOut,
-      ),
-    ),
-  ),
+          begin: 0.0,
+          end: 1.0,
+        ).animate(
+          CurvedAnimation(
+            parent: controller,
+            curve: Interval(
+              0.0,
+              0.5,
+              curve: Curves.easeIn,
+            ),
+            reverseCurve: Interval(
+              0.0,
+              0.2,
+              curve: Curves.easeOut,
+            ),
+          ),
+        ),
         super(key: key);
 
   ///

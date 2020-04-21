@@ -191,7 +191,13 @@ class _LoginState extends State<Login> {
             String token = decoded['code']['access_token'] ?? '';
 
             if (token.isNotEmpty) {
-              await closeWebView();
+              if (!_config.isWeb) {
+                try {
+                  await closeWebView();
+                } catch (exception) {
+                  print('closeWebView: $exception');
+                }
+              }
               SharedPreferences prefs = await SharedPreferences.getInstance();
               await prefs.setString('token', token);
               _controller.add(Status.redirecting);

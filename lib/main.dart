@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
@@ -15,6 +16,10 @@ void main() {
   Config _config = Config();
 
   _config.debug = debug;
+
+  if (kIsWeb) {
+    _config.platform = Config.WEB;
+  }
 
   runApp(Socialgist());
 }

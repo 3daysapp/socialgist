@@ -1,6 +1,9 @@
 import 'package:socialgist/model/ApiUsage.dart';
 
 class Config {
+  static final String WEB = 'web';
+
+  ///
   static final Config _singleton = Config._internal();
 
   ///
@@ -16,6 +19,7 @@ class Config {
   Config._internal();
 
   bool debug = true;
+  String platform = 'unknown';
 
   final String rootEndpoint = 'https://api.github.com';
 
@@ -35,4 +39,6 @@ class Config {
   String token;
 
   ApiUsage apiUsage = ApiUsage(limit: '1', remaining: '0');
+
+  bool get isWeb => platform == WEB;
 }
