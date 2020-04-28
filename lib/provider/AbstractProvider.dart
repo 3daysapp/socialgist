@@ -10,7 +10,8 @@ import 'package:socialgist/util/Config.dart';
 /// https://developer.github.com/v3/#pagination
 ///
 abstract class AbstractProvider<T extends AbstractModel> {
-  /// Note that page numbering is 1-based and that omitting the ?page parameter will return the first page.
+  /// Note that page numbering is 1-based and that omitting the ?page
+  /// parameter will return the first page.
   int _page;
 
   int _first;
@@ -27,16 +28,7 @@ abstract class AbstractProvider<T extends AbstractModel> {
 
   T _model;
 
-  final Map<String, String> _headers = Map.unmodifiable({
-    /// https://developer.github.com/v3/#current-version
-    'Accept': 'application/vnd.github.v3+json',
-
-    /// https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/#3-use-the-access-token-to-access-the-api
-    'Authorization': 'token ${Config().token}',
-
-    /// https://developer.github.com/v3/#user-agent-required
-    'User-Agent': 'SocialGist',
-  });
+  Map<String, String> _headers;
 
   ///
   ///
@@ -51,6 +43,19 @@ abstract class AbstractProvider<T extends AbstractModel> {
     _model = model;
     _page = page;
     _perPage = perPage;
+    _headers = {};
+
+    /// https://developer.github.com/v3/#current-version
+    _headers['Accept'] = 'application/vnd.github.v3+json';
+
+    /// https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/#3-use-the-access-token-to-access-the-api
+    _headers['Authorization'] = 'token ${Config().token}';
+
+    /// Refused to set unsafe header "User-Agent"
+    if (!Config().isWeb) {
+      /// https://developer.github.com/v3/#user-agent-required
+      _headers['User-Agent'] = 'SocialGist';
+    }
   }
 
   ///
@@ -114,7 +119,7 @@ abstract class AbstractProvider<T extends AbstractModel> {
 
     if (headers.containsKey('link')) {
       RegExp regexp =
-      RegExp(r'<(?<url>https://api.github.com/.*?)>; rel="(?<name>.*?)"');
+          RegExp(r'<(?<url>https://api.github.com/.*?)>; rel="(?<name>.*?)"');
 
       Iterable<RegExpMatch> matches = regexp.allMatches(headers['link']);
 
