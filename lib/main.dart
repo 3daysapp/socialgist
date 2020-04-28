@@ -35,6 +35,7 @@ class Socialgist extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'SocialGist',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
         buttonTheme: ThemeData.dark().buttonTheme.copyWith(
               buttonColor: Colors.tealAccent,

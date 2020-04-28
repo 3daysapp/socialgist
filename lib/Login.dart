@@ -106,11 +106,20 @@ class _LoginState extends State<Login> {
 
                   /// error
                   case Status.error:
-                    // TODO - Botão para tentar novamente.
                     return Center(
-                      child: Text(
-                        'Erro:\n\n$_error',
-                        textAlign: TextAlign.center,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          Text(
+                            'Erro:\n\n$_error',
+                            textAlign: TextAlign.center,
+                          ),
+                          RaisedButton(
+                            child: Text('Autorizar'),
+                            onPressed: _login,
+                          ),
+                        ],
                       ),
                     );
 
@@ -155,7 +164,8 @@ class _LoginState extends State<Login> {
         forceSafariVC: true,
         forceWebView: true,
         enableJavaScript: true,
-        statusBarBrightness: Brightness.dark,
+//        This property creates a crash.
+//        statusBarBrightness: Brightness.dark,
       );
       _getCode(authState);
     } else {
@@ -171,6 +181,7 @@ class _LoginState extends State<Login> {
     Config _config = Config();
     int cont = 30;
     Client client = Client();
+    String token;
 
     try {
       while (cont > 0) {
@@ -188,7 +199,7 @@ class _LoginState extends State<Login> {
           print('Decoded: $decoded');
 
           if (decoded['success'] ?? false) {
-            String token = decoded['code']['access_token'] ?? '';
+            token = decoded['code']['access_token'] ?? '';
 
             if (token.isNotEmpty) {
               if (!_config.isWeb) {
@@ -200,9 +211,8 @@ class _LoginState extends State<Login> {
               }
               SharedPreferences prefs = await SharedPreferences.getInstance();
               await prefs.setString('token', token);
-              _controller.add(Status.redirecting);
-              _goHome(token);
-              return;
+              cont = -1;
+              break;
             }
           }
         }
@@ -210,8 +220,14 @@ class _LoginState extends State<Login> {
         cont--;
         await Future.delayed(Duration(milliseconds: 3000));
       }
-      _error = 'Tempo máximo excedido.';
-      _controller.add(Status.error);
+
+      if (token == null || token.isEmpty) {
+        _error = 'Tempo máximo excedido.';
+        _controller.add(Status.error);
+      } else {
+        _controller.add(Status.redirecting);
+        _goHome(token);
+      }
     } catch (ex) {
       _error = ex.toString();
       _controller.add(Status.error);
