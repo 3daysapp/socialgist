@@ -26,6 +26,18 @@ enum Status {
 ///
 ///
 class Login extends StatefulWidget {
+  final String message;
+  final bool authAgain;
+
+  ///
+  ///
+  ///
+  const Login({
+    Key key,
+    this.message,
+    this.authAgain = false,
+  }) : super(key: key);
+
   ///
   ///
   ///
@@ -58,7 +70,11 @@ class _LoginState extends State<Login> {
       _controller.add(Status.redirecting);
       _goHome(prefs.getString('token'));
     } else {
-      _controller.add(Status.login);
+      if (widget.authAgain) {
+        _login();
+      } else {
+        _controller.add(Status.login);
+      }
     }
   }
 
@@ -80,6 +96,22 @@ class _LoginState extends State<Login> {
               mainAxisAlignment: MainAxisAlignment.center,
             ),
           ),
+          if (widget.message != null && widget.message.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    widget.message,
+                    style: TextStyle(
+                      color: Colors.redAccent,
+                    ),
+                  )),
+            ),
           Expanded(
             child: StreamBuilder<Status>(
               initialData: Status.init,

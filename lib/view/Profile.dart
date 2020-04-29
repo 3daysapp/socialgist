@@ -48,7 +48,7 @@ class _ProfileState extends State<Profile> {
   ///
   ///
   void _loadData() async {
-    AuthUserProvider provider = AuthUserProvider();
+    AuthUserProvider provider = AuthUserProvider(context);
     User me = await provider.getObject();
     _controller.add(me);
   }
@@ -73,66 +73,57 @@ class _ProfileState extends State<Profile> {
                 children: [
                   hasInfo(me.company)
                       ? Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Icon(
-                          Icons.business,
-                          color: softWhite,
-                        ),
-                        SizedBox(height: 5.0),
-                        Text(
-                          me.company,
-                          style: Theme
-                              .of(context)
-                              .textTheme
-                              .subtitle1,
-                        ),
-                      ],
-                    ),
-                  )
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Icon(
+                                Icons.business,
+                                color: softWhite,
+                              ),
+                              SizedBox(height: 5.0),
+                              Text(
+                                me.company,
+                                style: Theme.of(context).textTheme.subtitle1,
+                              ),
+                            ],
+                          ),
+                        )
                       : Spacer(),
                   hasInfo(me.avatarUrl)
                       ? Expanded(
-
-                    /// CircleAvatar as a parent with a larger size and
-                    /// background color to create a border effect.
-                    child: CircleAvatar(
-                      backgroundColor: Theme
-                          .of(context)
-                          .accentColor,
-                      minRadius: 22.0,
-                      maxRadius: 52.0,
-                      child: CircleAvatar(
-                        backgroundColor: Colors.black54,
-                        backgroundImage: NetworkImage(me.avatarUrl),
-                        minRadius: 20.0,
-                        maxRadius: 50.0,
-                      ),
-                    ),
-                  )
+                          /// CircleAvatar as a parent with a larger size and
+                          /// background color to create a border effect.
+                          child: CircleAvatar(
+                            backgroundColor: Theme.of(context).accentColor,
+                            minRadius: 22.0,
+                            maxRadius: 52.0,
+                            child: CircleAvatar(
+                              backgroundColor: Colors.black54,
+                              backgroundImage: NetworkImage(me.avatarUrl),
+                              minRadius: 20.0,
+                              maxRadius: 50.0,
+                            ),
+                          ),
+                        )
                       : Spacer(),
                   hasInfo(me.location)
                       ? Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Icon(
-                          Icons.location_on,
-                          color: softWhite,
-                        ),
-                        SizedBox(height: 5),
-                        Text(
-                          me.location,
-                          style: Theme
-                              .of(context)
-                              .textTheme
-                              .subtitle1,
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  )
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Icon(
+                                Icons.location_on,
+                                color: softWhite,
+                              ),
+                              SizedBox(height: 5),
+                              Text(
+                                me.location,
+                                style: Theme.of(context).textTheme.subtitle1,
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        )
                       : Spacer(),
                 ],
               ),
@@ -169,9 +160,7 @@ class _ProfileState extends State<Profile> {
               margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
               child: Divider(
                 height: 1,
-                color: Theme
-                    .of(context)
-                    .accentColor,
+                color: Theme.of(context).accentColor,
                 thickness: 1,
               ),
             ),
@@ -205,26 +194,21 @@ class _ProfileState extends State<Profile> {
                 children: cards.keys
                     .map(
                       (key) => Card(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          '${cards[key]}',
-                          style: TextStyle(
-                            fontSize: 50.0,
-                            color: Theme
-                                .of(context)
-                                .accentColor,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Text(
+                              '${cards[key]}',
+                              style: TextStyle(
+                                fontSize: 50.0,
+                                color: Theme.of(context).accentColor,
                               ),
-                        ),
-                        Text(
-                          key,
-                          style: Theme
-                              .of(context)
-                              .textTheme
-                              .subtitle1,
-                        ),
-                      ],
+                            ),
+                            Text(
+                              key,
+                              style: Theme.of(context).textTheme.subtitle1,
+                            ),
+                          ],
                         ),
                       ),
                     )

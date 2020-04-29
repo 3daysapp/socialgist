@@ -1,7 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:socialgist/Login.dart';
 import 'package:socialgist/model/AbstractModel.dart';
 import 'package:socialgist/model/ApiUsage.dart';
 import 'package:socialgist/util/Config.dart';
@@ -10,6 +13,8 @@ import 'package:socialgist/util/Config.dart';
 /// https://developer.github.com/v3/#pagination
 ///
 abstract class AbstractProvider<T extends AbstractModel> {
+  BuildContext _context;
+
   /// Note that page numbering is 1-based and that omitting the ?page
   /// parameter will return the first page.
   int _page;
@@ -34,11 +39,13 @@ abstract class AbstractProvider<T extends AbstractModel> {
   ///
   ///
   AbstractProvider({
+    @required BuildContext context,
     @required String endpoint,
     @required T model,
     int page,
     int perPage,
   }) {
+    _context = context;
     _endpoint = endpoint;
     _model = model;
     _page = page;
@@ -102,9 +109,28 @@ abstract class AbstractProvider<T extends AbstractModel> {
       headers: _headers,
     );
 
-    print('Responde: ${response.statusCode}');
+    print('Get Status Code: ${response.statusCode}');
 
-    // TODO - Tratamento de erros.
+    if ((response.statusCode < 200 || response.statusCode > 299) &&
+        response.statusCode != 404) {
+      var errorBody = json.decode(response.body);
+      String message = errorBody['message'] ?? 'Unknown error.';
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      await prefs.clear();
+
+      await Navigator.of(_context).pushAndRemoveUntil(
+        MaterialPageRoute(
+          builder: (context) => Login(
+            message: '$message. (${response.statusCode})',
+            authAgain: response.statusCode == 401,
+          ),
+        ),
+        (_) => false,
+      );
+      return;
+    }
 
     Map<String, String> headers = response.headers;
 
@@ -118,31 +144,35 @@ abstract class AbstractProvider<T extends AbstractModel> {
     );
 
     if (headers.containsKey('link')) {
+      List<String> links = headers['link'].split(',');
 
-      // FIXME - Regex don't work on web.
-      // https://github.com/dart-lang/sdk/issues/41342#issuecomment-609393434
-      RegExp regexp =
-          RegExp(r'<(?<url>https://api.github.com/.*?)>; rel="(?<name>.*?)"');
+      for (String link in links) {
+        List<String> parts = link.split(';');
 
-      Iterable<RegExpMatch> matches = regexp.allMatches(headers['link']);
+        if (parts.length > 1) {
+          String url = parts[0].trim();
+          url = url.substring(1, url.length - 1);
 
-      for (RegExpMatch match in matches) {
-        Uri uri = Uri.parse(match.namedGroup('url'));
-        int number = int.parse(uri.queryParameters['page']);
-        if (number != null) {
-          switch (match.namedGroup('name')) {
-            case 'first':
-              _first = number;
-              break;
-            case 'prev':
-              _prev = number;
-              break;
-            case 'next':
-              _next = number;
-              break;
-            case 'last':
-              _last = number;
-              break;
+          Uri uri = Uri.parse(url);
+          int number = int.parse(uri.queryParameters['page']);
+
+          String name = parts[1].trim();
+
+          if (number != null) {
+            switch (name) {
+              case 'rel="first"':
+                _first = number;
+                break;
+              case 'rel="prev"':
+                _prev = number;
+                break;
+              case 'rel="next"':
+                _next = number;
+                break;
+              case 'rel="last"':
+                _last = number;
+                break;
+            }
           }
         }
       }
@@ -203,7 +233,7 @@ abstract class AbstractProvider<T extends AbstractModel> {
       headers: headers,
     );
 
-    print('Response: ${response.statusCode}');
+    print('Put Status Code: ${response.statusCode}');
   }
 
   ///
@@ -215,6 +245,6 @@ abstract class AbstractProvider<T extends AbstractModel> {
       headers: _headers,
     );
 
-    print('Response: ${response.statusCode}');
+    print('Delete Status Code: ${response.statusCode}');
   }
 }
