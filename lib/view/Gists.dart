@@ -22,10 +22,11 @@ class Gists extends StatefulWidget {
 ///
 ///
 class _GistsState extends State<Gists> {
-  final PublicGistProvider _provider = PublicGistProvider(perPage: 5);
-  ScrollController _scrollController;
   final SplayTreeMap<String, Gist> _gists =
       SplayTreeMap((i, j) => j.compareTo(i));
+
+  PublicGistProvider _provider;
+  ScrollController _scrollController;
   bool _loading = true;
 
   ///
@@ -34,6 +35,7 @@ class _GistsState extends State<Gists> {
   @override
   void initState() {
     super.initState();
+    _provider = PublicGistProvider(context, perPage: 8);
     _scrollController = ScrollController();
 
     _scrollController.addListener(() {
@@ -87,22 +89,32 @@ class _GistsState extends State<Gists> {
         child: Column(
           children: <Widget>[
             Expanded(
-              child: ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                controller: _scrollController,
-                children:
-                    _gists.values.map((gist) => GistWidget(gist)).toList(),
+              child: Stack(
+                children: <Widget>[
+                  ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    controller: _scrollController,
+                    children:
+                        _gists.values.map((gist) => GistWidget(gist)).toList(),
+                  ),
+                  Positioned(
+                    bottom: 0.0,
+                    // TODO - Change Visibility to Animation.
+                    child: Visibility(
+                      visible: _loading,
+                      child: Container(
+                        color: Colors.black87,
+                        height: 60.0,
+                        width: MediaQuery.of(context).size.width,
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            Visibility(
-              visible: _loading,
-              child: Container(
-                height: 60.0,
-                child: Center(
-                  child: CircularProgressIndicator(),
-                ),
-              ),
-            )
           ],
         ),
       ),
@@ -174,7 +186,11 @@ class _GistWidgetState extends State<GistWidget> with TickerProviderStateMixin {
                 ),
               ),
               title: Text(widget.gist.owner.login),
-              subtitle: Text(widget.gist.description ?? ''),
+              subtitle: Text(
+                widget.gist.description ?? '',
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
             GistContent(widget.gist, _controller.view),
             ButtonBar(
@@ -196,7 +212,7 @@ class _GistWidgetState extends State<GistWidget> with TickerProviderStateMixin {
                   label: 'Star',
                   onPressed: () async {
                     try {
-                      PublicGistProvider provider = PublicGistProvider();
+                      PublicGistProvider provider = PublicGistProvider(context);
                       // ignore: unawaited_futures
                       provider.putEmpty([widget.gist.id, 'star']);
                       await _controller.forward().orCancel;
@@ -262,7 +278,7 @@ class GistContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Gist>(
-      future: PublicGistProvider().getObject([gist.id]),
+      future: PublicGistProvider(context).getObject([gist.id]),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           Gist newGist = snapshot.data;
