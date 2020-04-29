@@ -111,8 +111,7 @@ abstract class AbstractProvider<T extends AbstractModel> {
 
     print('Get Status Code: ${response.statusCode}');
 
-    if ((response.statusCode < 200 || response.statusCode > 299) &&
-        response.statusCode != 404) {
+    if (response.statusCode == 401 || response.statusCode == 403) {
       var errorBody = json.decode(response.body);
       String message = errorBody['message'] ?? 'Unknown error.';
 
