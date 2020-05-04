@@ -10,7 +10,7 @@ class GistHeader extends StatelessWidget {
   ///
   ///
   ///
-  const GistHeader({Key key, this.gist}) : super(key: key);
+  const GistHeader(this.gist, {Key key}) : super(key: key);
 
   ///
   ///

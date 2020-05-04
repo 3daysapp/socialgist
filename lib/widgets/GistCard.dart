@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:socialgist/model/Gist.dart';
 import 'package:socialgist/provider/PublicGistProvider.dart';
-import 'package:socialgist/widgets/CardButton.dart';
+import 'package:socialgist/view/GistDetail.dart';
 
-import 'GistContent.dart';
+import 'GistButtonBar.dart';
+import 'GistDate.dart';
+import 'GistFile.dart';
+import 'GistHeader.dart';
 
 ///
 ///
@@ -28,7 +30,10 @@ class GistCard extends StatefulWidget {
 ///
 ///
 class _GistCardState extends State<GistCard> with TickerProviderStateMixin {
+  final double fileHeight = 150.0;
+  DateTime createdAt;
   AnimationController _controller;
+  Gist localGist;
 
   ///
   ///
@@ -36,6 +41,7 @@ class _GistCardState extends State<GistCard> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    createdAt = widget.gist.createdAtDate;
     _controller = AnimationController(
       duration: const Duration(milliseconds: 750),
       vsync: this,
@@ -53,42 +59,68 @@ class _GistCardState extends State<GistCard> with TickerProviderStateMixin {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            GistCard(widget.gist),
-            GistContent(widget.gist, _controller.view, 150.0),
-            ButtonBar(
-              children: <Widget>[
-                CardButton(
-                  iconData: FontAwesomeIcons.solidFile,
-                  label: '${widget.gist.files.length} Arquivo'
-                      '${widget.gist.files.length > 1 ? 's' : ''}',
-                  onPressed: () {},
-                ),
-                CardButton(
-                  iconData: FontAwesomeIcons.solidComments,
-                  label: '${widget.gist.comments} Comentário'
-                      '${widget.gist.comments > 1 ? 's' : ''}',
-                  onPressed: () {},
-                ),
-                CardButton(
-                  iconData: FontAwesomeIcons.solidStar,
-                  label: 'Star',
-                  onPressed: () async {
-                    try {
-                      PublicGistProvider provider = PublicGistProvider(context);
-                      // ignore: unawaited_futures
-                      provider.putEmpty([widget.gist.id, 'star']);
-                      await _controller.forward().orCancel;
-                      await _controller.reverse().orCancel;
-                    } on TickerCanceled {
-                      // the animation got canceled, probably because we were disposed
-                    }
-                  },
-                ),
-              ],
-            )
+            GestureDetector(
+              child: Column(
+                children: <Widget>[
+                  /// Header
+                  GistHeader(widget.gist),
+
+                  /// First File
+                  _getGistFile(),
+
+                  /// Created At
+                  GistDate(widget.gist),
+                ],
+              ),
+              onTap: () {
+                if (localGist != null) {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => GistDetail(localGist),
+                    ),
+                  );
+                }
+              },
+            ),
+            GistButtonBar(widget.gist, _controller),
           ],
         ),
       ),
+    );
+  }
+
+  ///
+  ///
+  ///
+  Widget _getGistFile() {
+    return FutureBuilder<Gist>(
+      future: PublicGistProvider(context).getObject([widget.gist.id]),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          localGist = snapshot.data;
+
+          if (localGist.files == null || localGist.files.isEmpty) {
+            return Center(child: Text('Arquivo não encontrado!'));
+          }
+
+          File file = localGist.files.first;
+
+          return GistFile(
+            file,
+            _controller.view,
+            height: fileHeight,
+          );
+        }
+        return Container(
+          height: fileHeight + 10.0,
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: CircularProgressIndicator(),
+            ),
+          ),
+        );
+      },
     );
   }
 

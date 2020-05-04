@@ -101,6 +101,8 @@ class Gist extends AbstractModel<Gist> {
     return data;
   }
 
+  DateTime get createdAtDate => DateTime.parse(createdAt);
+
   ///
   ///
   ///
