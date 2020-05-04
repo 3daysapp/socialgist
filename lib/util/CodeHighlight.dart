@@ -59,7 +59,7 @@ class CodeHighlight extends StatelessWidget {
     }
 
     String content;
-    if (file.content.length < 500) {
+    if (height == null || file.content.length < 500) {
       content = file.content;
     } else {
       content = file.content.substring(0, 500) + ' {...}';

@@ -35,6 +35,13 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       vsync: this,
       length: 2,
     );
+
+    _tabController.addListener(() {
+//      if(!_tabController.indexIsChanging) {
+        print('Previous Index: ${_tabController.previousIndex}');
+        print('Index: ${_tabController.index}');
+//      }
+    });
   }
 
   ///
