@@ -1,14 +1,26 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
+import 'package:socialgist/i18n.dart';
 import 'package:socialgist/model/Gist.dart';
 import 'package:socialgist/provider/PublicGistProvider.dart';
+import 'package:socialgist/view/Home.dart';
 import 'package:socialgist/widgets/GistCard.dart';
 
 ///
 ///
 ///
 class Gists extends StatefulWidget {
+  final ValueNotifier<HomeEvent> homeController;
+
+  ///
+  ///
+  ///
+  const Gists({
+    Key key,
+    @required this.homeController,
+  }) : super(key: key);
+
   ///
   ///
   ///
@@ -26,6 +38,8 @@ class _GistsState extends State<Gists> {
   PublicGistProvider _provider;
   ScrollController _scrollController;
   bool _loading = true;
+
+  Function _homeListener;
 
   ///
   ///
@@ -45,6 +59,18 @@ class _GistsState extends State<Gists> {
         }
       }
     });
+
+    _homeListener = () {
+      if (widget.homeController.value == HomeEvent.gistsTabScrollTop) {
+        _scrollController.animateTo(
+          0.0,
+          duration: Duration(milliseconds: 1500),
+          curve: Curves.easeInOut,
+        );
+      }
+    };
+
+    widget.homeController.addListener(_homeListener);
 
     _initialData();
   }
@@ -75,47 +101,60 @@ class _GistsState extends State<Gists> {
   ///
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(4.0),
-      child: RefreshIndicator(
-        onRefresh: () async {
-          List<Gist> gists = await _provider.getList(['public']);
-          _gists.clear();
-          _gists.addAll({for (Gist gist in gists) gist.createdAt: gist});
-          setState(() => _loading = false);
-        },
-        child: Column(
-          children: <Widget>[
-            Expanded(
-              child: Stack(
-                children: <Widget>[
-                  ListView(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    controller: _scrollController,
-                    children:
-                        _gists.values.map((gist) => GistCard(gist)).toList(),
-                  ),
-                  Positioned(
-                    bottom: 0.0,
-                    // TODO - Change Visibility to Animation.
-                    child: Visibility(
-                      visible: _loading,
-                      child: Container(
-                        color: Colors.black87,
-                        height: 60.0,
-                        width: MediaQuery.of(context).size.width,
-                        child: Center(
-                          child: CircularProgressIndicator(),
-                        ),
+    return RefreshIndicator(
+      onRefresh: () async {
+        List<Gist> gists = await _provider.getList(['public']);
+        _gists.clear();
+        _gists.addAll({for (Gist gist in gists) gist.createdAt: gist});
+        setState(() => _loading = false);
+      },
+      child: Column(
+        children: <Widget>[
+          Expanded(
+            child: Stack(
+              children: <Widget>[
+                ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  controller: _scrollController,
+                  children:
+                      _gists.values.map((gist) => GistCard(gist)).toList(),
+                ),
+                AnimatedPositioned(
+                  duration: Duration(milliseconds: 250),
+                  curve: Curves.easeInOut,
+                  bottom: _loading ? 0 : -60,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.black38,
+                          Colors.black87,
+                        ],
                       ),
                     ),
+                    height: 60.0,
+                    width: MediaQuery.of(context).size.width,
+                    alignment: Alignment.center,
+                    child: Text('Loading...'.i18n),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
+  }
+
+  ///
+  ///
+  ///
+  @override
+  void dispose() {
+    widget.homeController.removeListener(_homeListener);
+    _scrollController.dispose();
+    super.dispose();
   }
 }

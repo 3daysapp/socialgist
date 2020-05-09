@@ -109,7 +109,9 @@ abstract class AbstractProvider<T extends AbstractModel> {
       headers: _headers,
     );
 
-    print('Get Status Code: ${response.statusCode}');
+    if (response.statusCode != 200) {
+      print('Get Status Code: ${response.statusCode}');
+    }
 
     if (response.statusCode == 401 || response.statusCode == 403) {
       var errorBody = json.decode(response.body);

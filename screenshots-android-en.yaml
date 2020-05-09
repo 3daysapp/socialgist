@@ -1,0 +1,15 @@
+tests:
+  - test_driver/main.dart
+
+staging: /tmp/screenshots
+
+locales:
+  - en-US
+
+devices:
+  android:
+    Nexus 6P EN:
+
+frame: false
+
+recording: /tmp/screenshots_record

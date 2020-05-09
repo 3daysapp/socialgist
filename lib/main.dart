@@ -1,9 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-
-import 'Login.dart';
-import 'util/Config.dart';
+import 'package:socialgist/Login.dart';
+import 'package:socialgist/util/Config.dart';
 
 ///
 ///
@@ -28,6 +27,18 @@ void main() {
 ///
 ///
 class Socialgist extends StatelessWidget {
+  final String message;
+  final bool authAgain;
+
+  ///
+  ///
+  ///
+  const Socialgist({
+    Key key,
+    this.message,
+    this.authAgain = false,
+  }) : super(key: key);
+
   ///
   ///
   ///
@@ -42,12 +53,16 @@ class Socialgist extends StatelessWidget {
               textTheme: ButtonTextTheme.primary,
             ),
       ),
-      home: Login(),
+      home: Login(
+        message: message,
+        authAgain: authAgain,
+      ),
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
       ],
       supportedLocales: [
+        Locale('en', 'US'),
         Locale('pt', 'BR'),
       ],
     );

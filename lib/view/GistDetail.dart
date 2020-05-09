@@ -71,7 +71,7 @@ class _GistDetailState extends State<GistDetail> with TickerProviderStateMixin {
                   child: GistFile(file, _controller),
                 ),
               ),
-              if (widget.gist.truncated) Text('Truncado.'),
+//              if (widget.gist.truncated) Text('Truncado.'),
               GistDate(widget.gist),
             ],
           ),

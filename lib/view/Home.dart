@@ -2,11 +2,21 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:socialgist/Login.dart';
+import 'package:socialgist/i18n.dart';
 import 'package:socialgist/util/Config.dart';
+import 'package:socialgist/view/Gists.dart';
+import 'package:socialgist/view/Profile.dart';
+import 'package:socialgist/widgets/SocialGistLogo.dart';
 
-import '../view/Profile.dart';
-import '../widgets/SocialGistLogo.dart';
-import 'Gists.dart';
+///
+///
+///
+enum HomeEvent {
+  none,
+  gistsTabScrollTop,
+}
 
 ///
 ///
@@ -23,6 +33,7 @@ class Home extends StatefulWidget {
 ///
 ///
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
+  ValueNotifier<HomeEvent> _homeController;
   TabController _tabController;
 
   ///
@@ -31,17 +42,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    _homeController = ValueNotifier(HomeEvent.none);
     _tabController = TabController(
       vsync: this,
       length: 2,
     );
-
-    _tabController.addListener(() {
-//      if(!_tabController.indexIsChanging) {
-        print('Previous Index: ${_tabController.previousIndex}');
-        print('Index: ${_tabController.index}');
-//      }
-    });
   }
 
   ///
@@ -52,43 +57,73 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     return Scaffold(
       appBar: AppBar(
         title: SocialGistLogo(),
+        centerTitle: true,
+        actions: <Widget>[
+          IconButton(
+            key: Key('exitBtn'),
+            tooltip: 'Exit'.i18n,
+            icon: FaIcon(
+              FontAwesomeIcons.signOutAlt,
+              semanticLabel: 'Exit'.i18n,
+            ),
+            onPressed: _logOut,
+          ),
+        ],
         bottom: TabBar(
           controller: _tabController,
+          onTap: (index) async {
+            if (index == 0 && _tabController.index == index) {
+              _homeController.value = HomeEvent.gistsTabScrollTop;
+              await Future.delayed(
+                Duration(milliseconds: 2000),
+                () => _homeController.value = HomeEvent.none,
+              );
+            }
+          },
           tabs: [
             Tab(
+              key: Key('exploreTab'),
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  FaIcon(FontAwesomeIcons.solidCompass),
+                  FaIcon(
+                    FontAwesomeIcons.solidCompass,
+                    semanticLabel: 'Explore'.i18n,
+                  ),
                   Padding(
                     padding: const EdgeInsets.only(left: 8.0),
-                    child: Text('Explorar'),
+                    child: Text('Explore'.i18n),
                   )
                 ],
               ),
             ),
             Tab(
+              key: Key('profileTab'),
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  FaIcon(FontAwesomeIcons.solidUserCircle),
+                  FaIcon(
+                    FontAwesomeIcons.solidUserCircle,
+                    semanticLabel: 'Profile'.i18n,
+                  ),
                   Padding(
                     padding: const EdgeInsets.only(left: 8.0),
-                    child: Text('Perfil'),
+                    child: Text('Profile'.i18n),
                   )
                 ],
               ),
             ),
           ],
         ),
-        centerTitle: true,
       ),
       body: TabBarView(
         controller: _tabController,
         children: <Widget>[
-          Gists(),
+          Gists(
+            homeController: _homeController,
+          ),
           Profile(),
         ],
       ),
@@ -97,7 +132,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           child: StreamBuilder<double>(
               initialData: 0,
               stream: Stream.periodic(
-                Duration(seconds: 5),
+                Duration(seconds: 10),
                 (i) => Config().apiUsage.percent,
               ),
               builder: (context, snapshot) {
@@ -109,5 +144,28 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         ),
       ),
     );
+  }
+
+  ///
+  ///
+  ///
+  void _logOut() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    await Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (context) => Login(),
+      ),
+      (_) => false,
+    );
+  }
+
+  ///
+  ///
+  ///
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 }

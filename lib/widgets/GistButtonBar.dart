@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:socialgist/i18n.dart';
 import 'package:socialgist/model/Gist.dart';
 import 'package:socialgist/provider/PublicGistProvider.dart';
 
@@ -21,19 +22,17 @@ class GistButtonBar extends StatelessWidget {
       children: <Widget>[
         CardButton(
           iconData: FontAwesomeIcons.solidFile,
-          label: '${gist.files.length} Arquivo'
-              '${gist.files.length > 1 ? 's' : ''}',
-          onPressed: () {},
+          label: '%d Files'.plural(gist.files.length),
+          onPressed: null,
         ),
         CardButton(
           iconData: FontAwesomeIcons.solidComments,
-          label: '${gist.comments} Comentário'
-              '${gist.comments > 1 ? 's' : ''}',
-          onPressed: () {},
+          label: '%d Comments'.plural(gist.comments),
+          onPressed: null,
         ),
         CardButton(
           iconData: FontAwesomeIcons.solidStar,
-          label: 'Star',
+          label: 'Star'.i18n,
           onPressed: () async {
             try {
               PublicGistProvider provider = PublicGistProvider(context);
