@@ -1,10 +1,10 @@
 name: socialgist
 description: Socialgist.
 
-version: 0.0.3+3
+version: 0.0.4+4
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.8.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -30,10 +30,11 @@ dependencies:
   i18n_extension: 1.3.6
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
   flutter_driver:
     sdk: flutter
+  test: any
+  # https://pub.dev/packages/screenshots
+  screenshots: 2.1.1
   # https://pub.dev/packages/flutter_launcher_icons
   flutter_launcher_icons: 0.7.5
 

@@ -27,6 +27,18 @@ void main() {
 ///
 ///
 class Socialgist extends StatelessWidget {
+  final String message;
+  final bool authAgain;
+
+  ///
+  ///
+  ///
+  const Socialgist({
+    Key key,
+    this.message,
+    this.authAgain = false,
+  }) : super(key: key);
+
   ///
   ///
   ///
@@ -41,7 +53,10 @@ class Socialgist extends StatelessWidget {
               textTheme: ButtonTextTheme.primary,
             ),
       ),
-      home: Login(),
+      home: Login(
+        message: message,
+        authAgain: authAgain,
+      ),
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,

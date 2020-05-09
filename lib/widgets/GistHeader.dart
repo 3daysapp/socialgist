@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:socialgist/model/Gist.dart';
+import 'package:socialgist/util/Config.dart';
 
 ///
 ///
@@ -24,14 +26,16 @@ class GistHeader extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             CircleAvatar(
-              backgroundImage: NetworkImage(gist.owner.avatarUrl),
+              child: Config().test ? FaIcon(FontAwesomeIcons.solidSmile) : null,
+              backgroundImage:
+                  Config().test ? null : NetworkImage(gist.owner.avatarUrl),
               backgroundColor: Colors.black54,
               radius: 24.0,
             ),
           ],
         ),
       ),
-      title: Text(gist.owner.login),
+      title: Text(Config().test ? 'SocialGist' : gist.owner.login),
       subtitle: Text(
         gist.description ?? '',
         maxLines: 3,

@@ -1,0 +1,112 @@
+default_platform(:android)
+
+platform :android do
+
+  #
+  #
+  #
+  desc "Runs all the tests"
+  lane :test do
+    Dir.chdir("../../") do
+      sh("flutter", "clean")
+      sh("flutter", "pub", "get")
+      sh("flutter", "pub", "run", "flutter_launcher_icons:main")
+#      sh("flutter", "pub", "run", "flutter_native_splash:create")
+      sh("screenshots", "--config=screenshots-android-en.yaml")
+      sh("screenshots", "--config=screenshots-android-pt.yaml")
+      sh("flutter", "clean")
+      sh('flutter', 'build', 'appbundle')
+    end
+  end
+
+  #
+  #
+  #
+  desc "Runs all the tests"
+  lane :internal do
+    ensure_git_branch(branch: 'master')
+
+    ensure_git_status_clean
+
+    Dir.chdir("../../") do
+      sh("flutter", "clean")
+      sh("flutter", "pub", "get")
+      sh("flutter", "pub", "run", "flutter_launcher_icons:main")
+#      sh("flutter", "pub", "run", "flutter_native_splash:create")
+      sh("screenshots", "--config=screenshots-android-en.yaml")
+      sh("screenshots", "--config=screenshots-android-pt.yaml")
+      sh("flutter", "clean")
+      sh('flutter', 'build', 'appbundle')
+    end
+
+    upload_to_play_store(
+       track: 'internal',
+       skip_upload_apk: true,
+       skip_upload_aab: false,
+       skip_upload_metadata: false,
+       skip_upload_images: false,
+       skip_upload_screenshots: false,
+       aab: '../build/app/outputs/bundle/release/app-release.aab',
+       deactivate_on_promote: false,
+       rollout: '1.0'
+    )
+  end
+
+  #
+  #
+  #
+  desc 'Promote latest release build from INTERNAL to ALPHA on Play Store'
+  lane :internal_to_alpha do
+    upload_to_play_store(
+      track: 'internal',
+      track_promote_to: 'alpha',
+      skip_upload_aab: true,
+      skip_upload_apk: true,
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      skip_upload_changelogs: true,
+      deactivate_on_promote: false,
+      rollout: '1.0'
+    )
+  end
+
+  #
+  #
+  #
+  desc 'Promote latest release build from ALPHA to BETA on Play Store'
+  lane :alpha_to_beta do
+    upload_to_play_store(
+      track: 'alpha',
+      track_promote_to: 'beta',
+      skip_upload_aab: true,
+      skip_upload_apk: true,
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      skip_upload_changelogs: true,
+      deactivate_on_promote: false,
+      rollout: '1.0'
+    )
+  end
+
+  #
+  #
+  #
+  desc 'Promote latest release build from BETA to PRODUCTION on Play Store'
+  lane :beta_to_production do
+    upload_to_play_store(
+      track: 'beta',
+      track_promote_to: 'production',
+      skip_upload_aab: true,
+      skip_upload_apk: true,
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      skip_upload_changelogs: true,
+      deactivate_on_promote: false,
+      rollout: '1.0'
+    )
+  end
+
+end

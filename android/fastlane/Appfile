@@ -1,0 +1,2 @@
+json_key_file("~/3daysapp/3daysapp-service-account.json")
+package_name("io.github.edufolly.socialgist")

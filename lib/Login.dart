@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:i18n_extension/i18n_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socialgist/i18n.dart';
 import 'package:socialgist/util/Config.dart';
@@ -67,7 +68,8 @@ class _LoginState extends State<Login> {
   ///
   void _loadData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (prefs.containsKey('token')) {
+
+    if (prefs.containsKey('token') && !Config().test) {
       _controller.add(Status.redirecting);
       _goHome(prefs.getString('token'));
     } else {
@@ -84,23 +86,24 @@ class _LoginState extends State<Login> {
   ///
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: SocialGistLogo(),
-      ),
-      body: Column(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(top: 128.0),
-            child: SocialGistLogo(
-              fontSize: 36.0,
-              mainAxisAlignment: MainAxisAlignment.center,
-            ),
-          ),
-          if (widget.message != null && widget.message.isNotEmpty)
+    return I18n(
+      child: Scaffold(
+        appBar: AppBar(
+          title: SocialGistLogo(),
+        ),
+        body: Column(
+          children: <Widget>[
             Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Container(
+              padding: const EdgeInsets.only(top: 128.0),
+              child: SocialGistLogo(
+                fontSize: 36.0,
+                mainAxisAlignment: MainAxisAlignment.center,
+              ),
+            ),
+            if (widget.message != null && widget.message.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Container(
                   decoration: BoxDecoration(
                     color: Colors.black,
                     borderRadius: BorderRadius.circular(6),
@@ -111,65 +114,69 @@ class _LoginState extends State<Login> {
                     style: TextStyle(
                       color: Colors.redAccent,
                     ),
-                  )),
-            ),
-          Expanded(
-            child: StreamBuilder<Status>(
-              initialData: Status.init,
-              stream: _controller.stream,
-              builder: (context, snapshot) {
-                switch (snapshot.data) {
+                  ),
+                ),
+              ),
+            Expanded(
+              child: StreamBuilder<Status>(
+                initialData: Status.init,
+                stream: _controller.stream,
+                builder: (context, snapshot) {
+                  switch (snapshot.data) {
 
-                  /// init
-                  case Status.init:
-                    return WaitingMessage('Waiting...'.i18n);
+                    /// init
+                    case Status.init:
+                      return WaitingMessage('Waiting...'.i18n);
 
-                  /// login
-                  case Status.login:
-                    return Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          Text(
-                            'You must log in to GitHub.'.i18n,
-                            textAlign: TextAlign.center,
-                          ),
+                    /// login
+                    case Status.login:
+                      return Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            Text(
+                              'You must log in to GitHub.'.i18n,
+                              textAlign: TextAlign.center,
+                            ),
+                            RaisedButton(
+                              key: Key('loginBtn'),
+                              child: Text('Let\'s go'.i18n),
+                              onPressed: _login,
+                            ),
+                          ],
+                        ),
+                      );
+
+                    /// loading
+                    case Status.loading:
+                      return WaitingMessage('Verifying access...'.i18n);
+
+                    /// error
+                    case Status.error:
+                      return ErrorMessage(
+                        _error,
+                        extras: [
                           RaisedButton(
+                            key: Key('loginBtn'),
                             child: Text('Let\'s go'.i18n),
                             onPressed: _login,
                           ),
                         ],
-                      ),
-                    );
+                      );
 
-                  /// loading
-                  case Status.loading:
-                    return WaitingMessage('Verifying access...'.i18n);
-
-                  /// error
-                  case Status.error:
-                    return ErrorMessage(
-                      _error,
-                      extras: [
-                        RaisedButton(
-                          child: Text('Let\'s go'.i18n),
-                          onPressed: _login,
-                        ),
-                      ],
-                    );
-
-                  /// success
-                  case Status.redirecting:
-                    return WaitingMessage('Redirecting...'.i18n);
-                }
-                return Center(
-                  child: Text('Something wrong happened.'.i18n),
-                );
-              },
+                    /// success
+                    case Status.redirecting:
+                      return WaitingMessage('Redirecting...'.i18n);
+                  }
+                  return Center(
+                    child: Text('Something wrong happened.'.i18n),
+                  );
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -195,14 +202,23 @@ class _LoginState extends State<Login> {
         _config.authEndpoint.replace(queryParameters: param).toString();
 
     if (await canLaunch(url)) {
-      await launch(
-        url,
-        forceSafariVC: true,
-        forceWebView: true,
-        enableJavaScript: true,
+      if (Config().test) {
+        if (Config().testMessage != null) {
+          _goHome(Config().testMessage);
+          return;
+        } else {
+          print(url.toString());
+        }
+      } else {
+        await launch(
+          url,
+          forceSafariVC: true,
+          forceWebView: true,
+          enableJavaScript: true,
 //        This property creates a crash.
 //        statusBarBrightness: Brightness.dark,
-      );
+        );
+      }
       _getCode(authState);
     } else {
       _error = 'The browser could not be opened.'.i18n;
@@ -232,7 +248,7 @@ class _LoginState extends State<Login> {
 
         if (response.statusCode == 200) {
           Map<String, dynamic> decoded = json.decode(response.body);
-          print('Decoded: $decoded');
+          print('Waiting: $decoded');
 
           if (decoded['success'] ?? false) {
             token = decoded['code']['access_token'] ?? '';

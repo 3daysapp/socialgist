@@ -18,6 +18,9 @@ class Config {
   ///
   Config._internal();
 
+  bool test = false;
+  String testMessage;
+
   bool debug = true;
   String platform = 'unknown';
 

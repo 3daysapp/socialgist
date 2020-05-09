@@ -59,15 +59,14 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         title: SocialGistLogo(),
         centerTitle: true,
         actions: <Widget>[
-          Tooltip(
-            message: 'Exit'.i18n,
-            child: IconButton(
-              icon: FaIcon(
-                FontAwesomeIcons.signOutAlt,
-                semanticLabel: 'Exit'.i18n,
-              ),
-              onPressed: _logOut,
+          IconButton(
+            key: Key('exitBtn'),
+            tooltip: 'Exit'.i18n,
+            icon: FaIcon(
+              FontAwesomeIcons.signOutAlt,
+              semanticLabel: 'Exit'.i18n,
             ),
+            onPressed: _logOut,
           ),
         ],
         bottom: TabBar(
@@ -83,6 +82,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           },
           tabs: [
             Tab(
+              key: Key('exploreTab'),
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -99,6 +99,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               ),
             ),
             Tab(
+              key: Key('profileTab'),
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.center,
