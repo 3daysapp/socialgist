@@ -4,7 +4,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:socialgist/i18n.dart';
 import 'package:socialgist/util/Config.dart';
+import 'package:socialgist/util/ErrorMessage.dart';
 import 'package:socialgist/util/WaitingMessage.dart';
 import 'package:socialgist/view/Home.dart';
 import 'package:socialgist/widgets/SocialGistLogo.dart';
@@ -120,7 +122,7 @@ class _LoginState extends State<Login> {
 
                   /// init
                   case Status.init:
-                    return WaitingMessage('Aguarde...');
+                    return WaitingMessage('Waiting...'.i18n);
 
                   /// login
                   case Status.login:
@@ -130,11 +132,11 @@ class _LoginState extends State<Login> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: <Widget>[
                           Text(
-                            'É necessário realizar o login no GitHub.',
+                            'You must log in to GitHub.'.i18n,
                             textAlign: TextAlign.center,
                           ),
                           RaisedButton(
-                            child: Text('Vamos lá'),
+                            child: Text('Let\'s go'.i18n),
                             onPressed: _login,
                           ),
                         ],
@@ -143,33 +145,26 @@ class _LoginState extends State<Login> {
 
                   /// loading
                   case Status.loading:
-                    return WaitingMessage('Verificando acesso...');
+                    return WaitingMessage('Verifying access...'.i18n);
 
                   /// error
                   case Status.error:
-                    return Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          Text(
-                            'Erro:\n\n$_error',
-                            textAlign: TextAlign.center,
-                          ),
-                          RaisedButton(
-                            child: Text('Vamos lá'),
-                            onPressed: _login,
-                          ),
-                        ],
-                      ),
+                    return ErrorMessage(
+                      _error,
+                      extras: [
+                        RaisedButton(
+                          child: Text('Let\'s go'.i18n),
+                          onPressed: _login,
+                        ),
+                      ],
                     );
 
                   /// success
                   case Status.redirecting:
-                    return WaitingMessage('Redirecionando...');
+                    return WaitingMessage('Redirecting...'.i18n);
                 }
                 return Center(
-                  child: Text('Aconteceu alguma coisa que não foi prevista.'),
+                  child: Text('Something wrong happened.'.i18n),
                 );
               },
             ),
@@ -210,7 +205,7 @@ class _LoginState extends State<Login> {
       );
       _getCode(authState);
     } else {
-      _error = 'Não foi possível abrir o navegador.';
+      _error = 'The browser could not be opened.'.i18n;
       _controller.add(Status.error);
     }
   }
@@ -263,7 +258,7 @@ class _LoginState extends State<Login> {
       }
 
       if (token == null || token.isEmpty) {
-        _error = 'Tempo máximo excedido.';
+        _error = 'Timeout reached.'.i18n;
         _controller.add(Status.error);
       } else {
         _controller.add(Status.redirecting);

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:socialgist/model/Gist.dart';
+import 'package:socialgist/i18n.dart';
 import 'package:socialgist/provider/PublicGistProvider.dart';
+import 'package:socialgist/util/ErrorMessage.dart';
 import 'package:socialgist/view/GistDetail.dart';
-
-import 'GistButtonBar.dart';
-import 'GistDate.dart';
-import 'GistFile.dart';
-import 'GistHeader.dart';
+import 'package:socialgist/widgets/GistButtonBar.dart';
+import 'package:socialgist/widgets/GistDate.dart';
+import 'package:socialgist/widgets/GistFile.dart';
+import 'package:socialgist/widgets/GistHeader.dart';
 
 ///
 ///
@@ -100,7 +101,7 @@ class _GistCardState extends State<GistCard> with TickerProviderStateMixin {
           localGist = snapshot.data;
 
           if (localGist.files == null || localGist.files.isEmpty) {
-            return Center(child: Text('Arquivo não encontrado!'));
+            return Center(child: Text('File not found!'.i18n));
           }
 
           File file = localGist.files.first;
@@ -111,12 +112,17 @@ class _GistCardState extends State<GistCard> with TickerProviderStateMixin {
             height: fileHeight,
           );
         }
+
+        if (snapshot.hasError) {
+          return ErrorMessage(snapshot.error.toString());
+        }
+
         return Container(
           height: fileHeight + 10.0,
           child: Center(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: CircularProgressIndicator(),
+              child: Text('Loading...'.i18n),
             ),
           ),
         );

@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
+import 'package:socialgist/i18n.dart';
 import 'package:socialgist/model/Gist.dart';
 import 'package:socialgist/provider/PublicGistProvider.dart';
 import 'package:socialgist/view/Home.dart';
@@ -136,7 +137,7 @@ class _GistsState extends State<Gists> {
                     height: 60.0,
                     width: MediaQuery.of(context).size.width,
                     alignment: Alignment.center,
-                    child: CircularProgressIndicator(),
+                    child: Text('Loading...'.i18n),
                   ),
                 ),
               ],

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:socialgist/util/Config.dart';
+import 'package:socialgist/i18n.dart';
 import 'package:socialgist/view/Gists.dart';
 import 'package:socialgist/view/Profile.dart';
 import 'package:socialgist/widgets/SocialGistLogo.dart';
@@ -74,7 +74,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   FaIcon(FontAwesomeIcons.solidCompass),
                   Padding(
                     padding: const EdgeInsets.only(left: 8.0),
-                    child: Text('Explorar'),
+                    child: Text('Explore'.i18n),
                   )
                 ],
               ),
@@ -87,7 +87,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   FaIcon(FontAwesomeIcons.solidUserCircle),
                   Padding(
                     padding: const EdgeInsets.only(left: 8.0),
-                    child: Text('Perfil'),
+                    child: Text('Profile'.i18n),
                   )
                 ],
               ),
@@ -105,22 +105,22 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           Profile(),
         ],
       ),
-      bottomNavigationBar: SafeArea(
-        child: Container(
-          child: StreamBuilder<double>(
-              initialData: 0,
-              stream: Stream.periodic(
-                Duration(seconds: 5),
-                (i) => Config().apiUsage.percent,
-              ),
-              builder: (context, snapshot) {
-                return LinearProgressIndicator(
-                  value: snapshot.data,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.teal),
-                );
-              }),
-        ),
-      ),
+//      bottomNavigationBar: SafeArea(
+//        child: Container(
+//          child: StreamBuilder<double>(
+//              initialData: 0,
+//              stream: Stream.periodic(
+//                Duration(seconds: 5),
+//                (i) => Config().apiUsage.percent,
+//              ),
+//              builder: (context, snapshot) {
+//                return LinearProgressIndicator(
+//                  value: snapshot.data,
+//                  valueColor: AlwaysStoppedAnimation<Color>(Colors.teal),
+//                );
+//              }),
+//        ),
+//      ),
     );
   }
 

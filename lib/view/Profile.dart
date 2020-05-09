@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:socialgist/i18n.dart';
 import 'package:socialgist/model/User.dart';
 import 'package:socialgist/provider/AuthUserProvider.dart';
+import 'package:socialgist/util/ErrorMessage.dart';
 import 'package:socialgist/util/WaitingMessage.dart';
 
 /*
@@ -176,10 +178,11 @@ class _ProfileState extends State<Profile> {
           }
 
           Map<String, int> cards = {
-            'Seguindo': me.following ?? 0,
-            'Seguidores': me.followers ?? 0,
-            'Repositórios': (me.publicRepos ?? 0) + (me.totalPrivateRepos ?? 0),
-            'Gists': (me.publicGists ?? 0) + (me.privateGists ?? 0),
+            'Following'.i18n: me.following ?? 0,
+            'Followers'.i18n: me.followers ?? 0,
+            'Repositories'.i18n:
+                (me.publicRepos ?? 0) + (me.totalPrivateRepos ?? 0),
+            'Gists'.i18n: (me.publicGists ?? 0) + (me.privateGists ?? 0),
           };
 
           profileInfoWidgets.add(
@@ -226,9 +229,7 @@ class _ProfileState extends State<Profile> {
         }
 
         if (snapshot.hasError) {
-          return Center(
-            child: Text('Ocorreu um erro:\n${snapshot.error}'),
-          );
+          return ErrorMessage(snapshot.error);
         }
 
         return WaitingMessage('Aguarde...');

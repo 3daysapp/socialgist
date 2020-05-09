@@ -47,6 +47,7 @@ class Socialgist extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
       ],
       supportedLocales: [
+        Locale('en', 'US'),
         Locale('pt', 'BR'),
       ],
     );
