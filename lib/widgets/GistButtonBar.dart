@@ -23,13 +23,13 @@ class GistButtonBar extends StatelessWidget {
           iconData: FontAwesomeIcons.solidFile,
           label: '${gist.files.length} Arquivo'
               '${gist.files.length > 1 ? 's' : ''}',
-          onPressed: () {},
+          onPressed: null,
         ),
         CardButton(
           iconData: FontAwesomeIcons.solidComments,
           label: '${gist.comments} Comentário'
               '${gist.comments > 1 ? 's' : ''}',
-          onPressed: () {},
+          onPressed: null,
         ),
         CardButton(
           iconData: FontAwesomeIcons.solidStar,
