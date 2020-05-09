@@ -1,9 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-
-import 'Login.dart';
-import 'util/Config.dart';
+import 'package:socialgist/Login.dart';
+import 'package:socialgist/util/Config.dart';
 
 ///
 ///

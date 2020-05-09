@@ -3,12 +3,23 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:socialgist/model/Gist.dart';
 import 'package:socialgist/provider/PublicGistProvider.dart';
+import 'package:socialgist/view/Home.dart';
 import 'package:socialgist/widgets/GistCard.dart';
 
 ///
 ///
 ///
 class Gists extends StatefulWidget {
+  final ValueNotifier<HomeEvent> homeController;
+
+  ///
+  ///
+  ///
+  const Gists({
+    Key key,
+    @required this.homeController,
+  }) : super(key: key);
+
   ///
   ///
   ///
@@ -26,6 +37,8 @@ class _GistsState extends State<Gists> {
   PublicGistProvider _provider;
   ScrollController _scrollController;
   bool _loading = true;
+
+  Function _homeListener;
 
   ///
   ///
@@ -45,6 +58,18 @@ class _GistsState extends State<Gists> {
         }
       }
     });
+
+    _homeListener = () {
+      if (widget.homeController.value == HomeEvent.gistsTabScrollTop) {
+        _scrollController.animateTo(
+          0.0,
+          duration: Duration(milliseconds: 1500),
+          curve: Curves.easeInOut,
+        );
+      }
+    };
+
+    widget.homeController.addListener(_homeListener);
 
     _initialData();
   }
@@ -117,5 +142,15 @@ class _GistsState extends State<Gists> {
         ),
       ),
     );
+  }
+
+  ///
+  ///
+  ///
+  @override
+  void dispose() {
+    widget.homeController.removeListener(_homeListener);
+    _scrollController.dispose();
+    super.dispose();
   }
 }

@@ -4,12 +4,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:socialgist/util/Config.dart';
+import 'package:socialgist/util/WaitingMessage.dart';
+import 'package:socialgist/view/Home.dart';
+import 'package:socialgist/widgets/SocialGistLogo.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import 'util/Config.dart';
-import 'util/WaitingMessage.dart';
-import 'view/Home.dart';
-import 'widgets/SocialGistLogo.dart';
 
 ///
 ///
@@ -126,9 +125,19 @@ class _LoginState extends State<Login> {
                   /// login
                   case Status.login:
                     return Center(
-                      child: RaisedButton(
-                        child: Text('Autorizar'),
-                        onPressed: _login,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          Text(
+                            'É necessário realizar o login no GitHub.',
+                            textAlign: TextAlign.center,
+                          ),
+                          RaisedButton(
+                            child: Text('Vamos lá'),
+                            onPressed: _login,
+                          ),
+                        ],
                       ),
                     );
 
@@ -148,7 +157,7 @@ class _LoginState extends State<Login> {
                             textAlign: TextAlign.center,
                           ),
                           RaisedButton(
-                            child: Text('Autorizar'),
+                            child: Text('Vamos lá'),
                             onPressed: _login,
                           ),
                         ],
