@@ -185,10 +185,10 @@ class _ProfileState extends State<Profile> {
           profileInfoWidgets.add(
             Container(
               padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 25.0),
-              child: GridView.count(
+              child: GridView.extent(
                 shrinkWrap: true,
-                crossAxisCount: 2,
-                childAspectRatio: 1,
+                maxCrossAxisExtent: 200.0,
+                childAspectRatio: 1.2,
                 mainAxisSpacing: 15.0,
                 crossAxisSpacing: 15.0,
                 children: cards.keys
@@ -225,7 +225,11 @@ class _ProfileState extends State<Profile> {
           );
         }
 
-        // TODO - Tratamento de erros.
+        if (snapshot.hasError) {
+          return Center(
+            child: Text('Ocorreu um erro:\n${snapshot.error}'),
+          );
+        }
 
         return WaitingMessage('Aguarde...');
       },
