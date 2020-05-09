@@ -80,6 +80,10 @@ final t = Translations('en_us') +
     {
       'en_us': 'Star',
       'pt_br': 'Star',
+    } +
+    {
+      'en_us': 'Exit',
+      'pt_br': 'Sair',
     };
 
 ///
