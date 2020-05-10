@@ -156,7 +156,7 @@ packages:
       name: google_fonts
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.0"
+    version: "1.0.0"
   highlight:
     dependency: transitive
     description:
@@ -661,4 +661,4 @@ packages:
     version: "2.2.1"
 sdks:
   dart: ">=2.8.0 <3.0.0"
-  flutter: ">=1.17.0 <2.0.0"
+  flutter: ">=1.12.13+hotfix.5 <2.0.0"

@@ -3,7 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:socialgist/i18n.dart';
 import 'package:socialgist/model/User.dart';
-import 'package:socialgist/view/Followers.dart';
+import 'package:socialgist/view/FollowList.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 ///
@@ -32,13 +32,26 @@ class ProfileBody extends StatelessWidget {
       'Following'.i18n: {
         'key': Key('followingCard'),
         'qtd': user.following ?? 0,
+        'onTap': () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => FollowList(
+                  title: 'Following'.i18n,
+                  endpoint: 'following',
+                  userName: user.login,
+                ),
+              ),
+            )
       },
       'Followers'.i18n: {
         'key': Key('followersCard'),
         'qtd': user.followers ?? 0,
         'onTap': () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => Followers(userName: user.login),
+                builder: (context) => FollowList(
+                  title: 'Followers'.i18n,
+                  endpoint: 'followers',
+                  userName: user.login,
+                ),
               ),
             )
       },
