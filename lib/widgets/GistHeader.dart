@@ -8,11 +8,16 @@ import 'package:socialgist/util/Config.dart';
 ///
 class GistHeader extends StatelessWidget {
   final Gist gist;
+  final Function onTap;
 
   ///
   ///
   ///
-  const GistHeader(this.gist, {Key key}) : super(key: key);
+  const GistHeader(
+    this.gist, {
+    Key key,
+    this.onTap,
+  }) : super(key: key);
 
   ///
   ///
@@ -41,6 +46,7 @@ class GistHeader extends StatelessWidget {
         maxLines: 3,
         overflow: TextOverflow.ellipsis,
       ),
+      onTap: onTap,
     );
   }
 }

@@ -69,7 +69,11 @@ abstract class AbstractProvider<T extends AbstractModel> {
   ///
   ///
   bool get hasNext =>
-      _next != null && _next > 0 && _last != null && _next < _last;
+      _next != null &&
+      _next > 0 &&
+      _last != null &&
+      (_page ?? 1) < _last &&
+      _next <= _last;
 
   ///
   ///

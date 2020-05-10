@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:socialgist/i18n.dart';
 import 'package:socialgist/model/Gist.dart';
+import 'package:socialgist/view/UserProfile.dart';
+import 'package:socialgist/widgets/DefaultScaffold.dart';
 import 'package:socialgist/widgets/GistButtonBar.dart';
 import 'package:socialgist/widgets/GistDate.dart';
 import 'package:socialgist/widgets/GistFile.dart';
 import 'package:socialgist/widgets/GistHeader.dart';
-import 'package:socialgist/widgets/SocialGistLogo.dart';
 
 ///
 ///
@@ -53,17 +55,22 @@ class _GistDetailState extends State<GistDetail> with TickerProviderStateMixin {
   ///
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: SocialGistLogo(),
-      ),
+    return DefaultScaffold(
+      subtitle: 'Gist'.i18n,
       backgroundColor: Theme.of(context).cardColor,
       body: SingleChildScrollView(
         child: SafeArea(
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
-              GistHeader(widget.gist),
+              GistHeader(
+                widget.gist,
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => UserProfile(widget.gist.owner),
+                  ),
+                ),
+              ),
               GistButtonBar(widget.gist, _controller),
               ...widget.gist.files.map(
                 (file) => Padding(

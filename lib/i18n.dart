@@ -62,6 +62,10 @@ final t = Translations('en_us') +
       'pt_br': 'Gists',
     } +
     {
+      'en_us': 'Gist',
+      'pt_br': 'Gist',
+    } +
+    {
       'en_us': 'Loading...',
       'pt_br': 'Carregando...',
     } +
