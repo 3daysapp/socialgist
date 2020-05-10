@@ -3,6 +3,7 @@ import 'package:socialgist/i18n.dart';
 import 'package:socialgist/model/User.dart';
 import 'package:socialgist/provider/AuthUserProvider.dart';
 import 'package:socialgist/util/ColumnMessage.dart';
+import 'package:socialgist/util/Config.dart';
 import 'package:socialgist/util/WaitingMessage.dart';
 import 'package:socialgist/widgets/ProfileBody.dart';
 
@@ -38,7 +39,9 @@ class _MyProfileState extends State<MyProfile> {
       stream: AuthUserProvider(context).getObject().asStream(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return ProfileBody(snapshot.data);
+          User me = snapshot.data;
+          Config().login = me.login;
+          return ProfileBody(me);
         }
 
         if (snapshot.hasError) {

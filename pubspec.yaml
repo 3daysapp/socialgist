@@ -1,7 +1,7 @@
 name: socialgist
 description: Socialgist.
 
-version: 0.0.5+5
+version: 0.0.6+6
 
 environment:
   sdk: ">=2.8.0 <3.0.0"

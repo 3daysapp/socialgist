@@ -41,6 +41,8 @@ class Config {
 
   String token;
 
+  String login;
+
   ApiUsage apiUsage = ApiUsage(limit: '1', remaining: '0');
 
   bool get isWeb => platform == WEB;

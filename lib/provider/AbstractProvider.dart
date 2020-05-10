@@ -228,7 +228,7 @@ abstract class AbstractProvider<T extends AbstractModel> {
   ///
   ///
   ///
-  Future<void> putEmpty([List<String> paths = const []]) async {
+  Future<bool> putEmpty([List<String> paths = const []]) async {
     Map<String, String> headers = Map.from(_headers);
 
     headers['Content-Length'] = '0';
@@ -238,18 +238,38 @@ abstract class AbstractProvider<T extends AbstractModel> {
       headers: headers,
     );
 
-    print('Put Status Code: ${response.statusCode}');
+    return response.statusCode == 204;
   }
 
   ///
   ///
   ///
-  Future<void> deleteEmpty([List<String> paths = const []]) async {
-    Response response = await put(
+  Future<bool> deleteEmpty([List<String> paths = const []]) async {
+    Map<String, String> headers = Map.from(_headers);
+
+    headers['Content-Length'] = '0';
+
+    Response response = await delete(
       _internalUri(paths),
-      headers: _headers,
+      headers: headers,
     );
 
-    print('Delete Status Code: ${response.statusCode}');
+    return response.statusCode == 204;
+  }
+
+  ///
+  ///
+  ///
+  Future<bool> check([List<String> paths = const []]) async {
+    Map<String, String> headers = Map.from(_headers);
+
+    headers['Content-Length'] = '0';
+
+    Response response = await get(
+      _internalUri(paths),
+      headers: headers,
+    );
+
+    return response.statusCode == 204;
   }
 }

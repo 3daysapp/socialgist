@@ -3,17 +3,16 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:socialgist/i18n.dart';
 import 'package:socialgist/model/User.dart';
-import 'package:socialgist/view/Followers.dart';
+import 'package:socialgist/provider/AuthUserProvider.dart';
+import 'package:socialgist/util/Config.dart';
+import 'package:socialgist/view/FollowList.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 ///
 ///
 ///
-class ProfileBody extends StatelessWidget {
+class ProfileBody extends StatefulWidget {
   final User user;
-
-  // Example of a color with opacity shared in some places
-  static final Color softWhite = Colors.white.withOpacity(0.5);
 
   ///
   ///
@@ -23,6 +22,34 @@ class ProfileBody extends StatelessWidget {
     Key key,
   }) : super(key: key);
 
+  @override
+  _ProfileBodyState createState() => _ProfileBodyState();
+}
+
+///
+///
+///
+class _ProfileBodyState extends State<ProfileBody> {
+  final Color softWhite = Colors.white.withOpacity(0.5);
+  bool amIFollowing = true;
+
+  ///
+  ///
+  ///
+  @override
+  void initState() {
+    super.initState();
+    _followRefresh();
+  }
+
+  ///
+  ///
+  ///
+  void _followRefresh() async {
+    bool following = await AuthUserProvider(context).amIFollowing(widget.user);
+    setState(() => amIFollowing = following);
+  }
+
   ///
   ///
   ///
@@ -31,24 +58,38 @@ class ProfileBody extends StatelessWidget {
     Map<String, Map<String, dynamic>> cards = {
       'Following'.i18n: {
         'key': Key('followingCard'),
-        'qtd': user.following ?? 0,
+        'qtd': widget.user.following ?? 0,
+        'onTap': () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => FollowList(
+                  title: 'Following'.i18n,
+                  endpoint: 'following',
+                  userName: widget.user.login,
+                ),
+              ),
+            )
       },
       'Followers'.i18n: {
         'key': Key('followersCard'),
-        'qtd': user.followers ?? 0,
+        'qtd': widget.user.followers ?? 0,
         'onTap': () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => Followers(userName: user.login),
+                builder: (context) => FollowList(
+                  title: 'Followers'.i18n,
+                  endpoint: 'followers',
+                  userName: widget.user.login,
+                ),
               ),
             )
       },
       'Repositories'.i18n: {
         'key': Key('repositoriesCard'),
-        'qtd': (user.publicRepos ?? 0) + (user.totalPrivateRepos ?? 0),
+        'qtd': (widget.user.publicRepos ?? 0) +
+            (widget.user.totalPrivateRepos ?? 0),
       },
       'Gists'.i18n: {
         'key': Key('gistsCard'),
-        'qtd': (user.publicGists ?? 0) + (user.privateGists ?? 0),
+        'qtd': (widget.user.publicGists ?? 0) + (widget.user.privateGists ?? 0),
       },
     };
     return CustomScrollView(
@@ -62,7 +103,7 @@ class ProfileBody extends StatelessWidget {
                 child: Row(
                   children: [
                     /// Company
-                    hasInfo(user.company)
+                    hasInfo(widget.user.company)
                         ? Expanded(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -73,8 +114,9 @@ class ProfileBody extends StatelessWidget {
                                 ),
                                 SizedBox(height: 5.0),
                                 Text(
-                                  user.company,
+                                  widget.user.company,
                                   style: Theme.of(context).textTheme.subtitle1,
+                                  textAlign: TextAlign.center,
                                 ),
                               ],
                             ),
@@ -82,7 +124,7 @@ class ProfileBody extends StatelessWidget {
                         : Spacer(),
 
                     /// Avatar
-                    hasInfo(user.avatarUrl)
+                    hasInfo(widget.user.avatarUrl)
                         ? Expanded(
                             /// CircleAvatar as a parent with a larger size and
                             /// background color to create a border effect.
@@ -92,7 +134,8 @@ class ProfileBody extends StatelessWidget {
                               maxRadius: 52.0,
                               child: CircleAvatar(
                                 backgroundColor: Colors.black54,
-                                backgroundImage: NetworkImage(user.avatarUrl),
+                                backgroundImage:
+                                    NetworkImage(widget.user.avatarUrl),
                                 minRadius: 20.0,
                                 maxRadius: 50.0,
                               ),
@@ -101,7 +144,7 @@ class ProfileBody extends StatelessWidget {
                         : Spacer(),
 
                     /// Location
-                    hasInfo(user.location)
+                    hasInfo(widget.user.location)
                         ? Expanded(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -112,7 +155,7 @@ class ProfileBody extends StatelessWidget {
                                 ),
                                 SizedBox(height: 5),
                                 Text(
-                                  user.location,
+                                  widget.user.location,
                                   style: Theme.of(context).textTheme.subtitle1,
                                   textAlign: TextAlign.center,
                                 ),
@@ -126,9 +169,9 @@ class ProfileBody extends StatelessWidget {
 
               /// Name
               Padding(
-                padding: const EdgeInsets.only(bottom: 2.0),
+                padding: const EdgeInsets.fromLTRB(4.0, 0.0, 4.0, 2.0),
                 child: Text(
-                  user.name ?? user.login,
+                  widget.user.name ?? widget.user.login,
                   style: GoogleFonts.openSans(
                     fontSize: 26,
                     fontWeight: FontWeight.w700,
@@ -139,11 +182,11 @@ class ProfileBody extends StatelessWidget {
               ),
 
               /// E-mail
-              if (hasInfo(user.email))
+              if (hasInfo(widget.user.email))
                 Padding(
                   padding: const EdgeInsets.all(4.0),
                   child: Text(
-                    user.email,
+                    widget.user.email,
                     style: Theme.of(context).textTheme.subtitle1,
                     textAlign: TextAlign.center,
                   ),
@@ -162,13 +205,13 @@ class ProfileBody extends StatelessWidget {
               ),
 
               /// Bio
-              if (hasInfo(user.bio))
+              if (hasInfo(widget.user.bio))
                 Padding(
                   padding: const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 4.0),
                   child: Tooltip(
-                    message: user.bio,
+                    message: widget.user.bio,
                     child: Text(
-                      user.bio,
+                      widget.user.bio,
                       style: Theme.of(context).textTheme.bodyText2,
                       textAlign: TextAlign.center,
                       maxLines: 3,
@@ -178,27 +221,27 @@ class ProfileBody extends StatelessWidget {
                 ),
 
               /// Blog
-              if (hasInfo(user.blog))
+              if (hasInfo(widget.user.blog))
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text(
-                        user.blog,
+                        widget.user.blog,
                         style: Theme.of(context).textTheme.subtitle1,
                         textAlign: TextAlign.center,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                       FutureBuilder<bool>(
-                        future: canLaunch(user.blog),
+                        future: canLaunch(widget.user.blog),
                         builder: (context, snapshot) {
                           if (snapshot.hasData && snapshot.data) {
                             return IconButton(
                               color: softWhite,
                               icon: FaIcon(FontAwesomeIcons.externalLinkAlt),
-                              onPressed: () => launch(user.blog),
+                              onPressed: () => launch(widget.user.blog),
                             );
                           }
                           return Container(
@@ -207,6 +250,33 @@ class ProfileBody extends StatelessWidget {
                           );
                         },
                       )
+                    ],
+                  ),
+                ),
+
+              if (widget.user.login != Config().login)
+                Padding(
+                  padding: const EdgeInsets.only(top: 2.0),
+                  child: ButtonBar(
+                    alignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      amIFollowing
+                          ? RaisedButton(
+                              child: Text('Following'.i18n),
+                              onPressed: () async {
+                                await AuthUserProvider(context)
+                                    .unfollow(widget.user);
+                                _followRefresh();
+                              },
+                            )
+                          : RaisedButton(
+                              child: Text('Follow'.i18n),
+                              onPressed: () async {
+                                await AuthUserProvider(context)
+                                    .follow(widget.user);
+                                _followRefresh();
+                              },
+                            ),
                     ],
                   ),
                 ),

@@ -11,14 +11,18 @@ import 'package:socialgist/widgets/DefaultScaffold.dart';
 ///
 ///
 ///
-class Followers extends StatefulWidget {
+class FollowList extends StatefulWidget {
+  final String title;
+  final String endpoint;
   final String userName;
 
   ///
   ///
   ///
-  const Followers({
+  const FollowList({
     Key key,
+    @required this.title,
+    @required this.endpoint,
     @required this.userName,
   }) : super(key: key);
 
@@ -26,13 +30,13 @@ class Followers extends StatefulWidget {
   ///
   ///
   @override
-  _FollowersState createState() => _FollowersState();
+  _FollowListState createState() => _FollowListState();
 }
 
 ///
 ///
 ///
-class _FollowersState extends State<Followers> {
+class _FollowListState extends State<FollowList> {
   final List<User> _users = [];
   final List<String> _cacheHit = [];
   ScrollController _scrollController;
@@ -69,7 +73,7 @@ class _FollowersState extends State<Followers> {
     setState(() => _loading = true);
     List<User> users = await _provider.getList([
       widget.userName,
-      'followers',
+      widget.endpoint,
     ]);
     _users.addAll(users);
     setState(() => _loading = false);
@@ -82,7 +86,7 @@ class _FollowersState extends State<Followers> {
     setState(() => _loading = true);
     List<User> users = await _provider.getNextList([
       widget.userName,
-      'followers',
+      widget.endpoint,
     ]);
     _users.addAll(users);
     setState(() => _loading = false);
@@ -94,7 +98,7 @@ class _FollowersState extends State<Followers> {
   @override
   Widget build(BuildContext context) {
     return DefaultScaffold(
-      subtitle: 'Followers'.i18n,
+      subtitle: widget.title,
       body: Builder(builder: (context) {
         if (_users.isEmpty) {
           return WaitingMessage('Loading...'.i18n);
