@@ -46,6 +46,10 @@ final t = Translations('en_us') +
       'pt_br': 'Tempo máximo excedido.',
     } +
     {
+      'en_us': 'Follow',
+      'pt_br': 'Seguir',
+    } +
+    {
       'en_us': 'Following',
       'pt_br': 'Seguindo',
     } +
