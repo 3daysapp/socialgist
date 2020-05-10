@@ -30,9 +30,11 @@ class ProfileBody extends StatelessWidget {
   Widget build(BuildContext context) {
     Map<String, Map<String, dynamic>> cards = {
       'Following'.i18n: {
+        'key': Key('followingCard'),
         'qtd': user.following ?? 0,
       },
       'Followers'.i18n: {
+        'key': Key('followersCard'),
         'qtd': user.followers ?? 0,
         'onTap': () => Navigator.of(context).push(
               MaterialPageRoute(
@@ -41,9 +43,11 @@ class ProfileBody extends StatelessWidget {
             )
       },
       'Repositories'.i18n: {
+        'key': Key('repositoriesCard'),
         'qtd': (user.publicRepos ?? 0) + (user.totalPrivateRepos ?? 0),
       },
       'Gists'.i18n: {
+        'key': Key('gistsCard'),
         'qtd': (user.publicGists ?? 0) + (user.privateGists ?? 0),
       },
     };
@@ -219,6 +223,7 @@ class ProfileBody extends StatelessWidget {
             children: cards.keys
                 .map(
                   (key) => GestureDetector(
+                    key: cards[key]['key'],
                     onTap: cards[key]['onTap'],
                     child: Card(
                       child: Stack(

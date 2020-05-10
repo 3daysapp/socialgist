@@ -11,6 +11,7 @@ class HomeButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
+      key: Key('homeButton'),
       icon: Icon(
         Icons.home,
       ),

@@ -34,6 +34,8 @@ void main() {
     test(
       '[Start test]',
       () async {
+        SerializableFinder homeButton = find.byValueKey('homeButton');
+
         SerializableFinder loginBtn = find.byValueKey('loginBtn');
         await driver.waitFor(loginBtn);
 
@@ -56,6 +58,19 @@ void main() {
         await Future.delayed(Duration(seconds: 5));
 
         await screenshot(driver, config, (_count++).toString());
+
+        SerializableFinder followersCard = find.byValueKey('followersCard');
+        await driver.waitFor(followersCard);
+
+        await driver.tap(followersCard);
+
+        await Future.delayed(Duration(seconds: 5));
+
+        await driver.waitFor(homeButton);
+
+        await driver.tap(homeButton);
+
+        await Future.delayed(Duration(seconds: 5));
       },
       timeout: Timeout(Duration(minutes: 2)),
     );
