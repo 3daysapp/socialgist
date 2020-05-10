@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:socialgist/i18n.dart';
 import 'package:socialgist/model/User.dart';
 import 'package:socialgist/provider/AuthUserProvider.dart';
-import 'package:socialgist/util/ErrorMessage.dart';
+import 'package:socialgist/util/ColumnMessage.dart';
 import 'package:socialgist/util/WaitingMessage.dart';
 
 /*
@@ -229,7 +229,9 @@ class _ProfileState extends State<Profile> {
         }
 
         if (snapshot.hasError) {
-          return ErrorMessage(snapshot.error);
+          return ColumnMessage(
+            errorMessage: snapshot.error,
+          );
         }
 
         return WaitingMessage('Aguarde...');
