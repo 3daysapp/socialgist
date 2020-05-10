@@ -1,8 +1,6 @@
 import 'package:flutter/widgets.dart';
-
-import '../model/User.dart';
-
-import 'AbstractProvider.dart';
+import 'package:socialgist/model/User.dart';
+import 'package:socialgist/provider/AbstractProvider.dart';
 
 ///
 ///

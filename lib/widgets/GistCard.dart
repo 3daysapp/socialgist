@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:socialgist/model/Gist.dart';
 import 'package:socialgist/i18n.dart';
 import 'package:socialgist/provider/PublicGistProvider.dart';
-import 'package:socialgist/util/ErrorMessage.dart';
+import 'package:socialgist/util/ColumnMessage.dart';
 import 'package:socialgist/view/GistDetail.dart';
 import 'package:socialgist/widgets/GistButtonBar.dart';
 import 'package:socialgist/widgets/GistDate.dart';
@@ -114,7 +114,9 @@ class _GistCardState extends State<GistCard> with TickerProviderStateMixin {
         }
 
         if (snapshot.hasError) {
-          return ErrorMessage(snapshot.error.toString());
+          return ColumnMessage(
+            errorMessage: snapshot.error,
+          );
         }
 
         return Container(

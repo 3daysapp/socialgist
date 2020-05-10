@@ -4,18 +4,21 @@ import 'package:socialgist/i18n.dart';
 ///
 ///
 ///
-class ErrorMessage extends StatelessWidget {
+class ColumnMessage extends StatelessWidget {
   final String message;
+  final String errorMessage;
   final List<Widget> extras;
 
   ///
   ///
   ///
-  const ErrorMessage(
-    this.message, {
+  const ColumnMessage({
     Key key,
+    this.message,
+    this.errorMessage,
     this.extras,
-  }) : super(key: key);
+  })  : assert(message != null || errorMessage != null),
+        super(key: key);
 
   ///
   ///
@@ -28,12 +31,17 @@ class ErrorMessage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
+          if (errorMessage != null)
+            Text(
+              'Error'.i18n,
+              style: Theme.of(context).textTheme.bodyText2,
+              textAlign: TextAlign.center,
+            ),
           Text(
-            'Error'.i18n,
-            style: Theme.of(context).textTheme.bodyText2,
+            (errorMessage ?? message).toString(),
+            textAlign: TextAlign.center,
           ),
-          Text(message.toString()),
-          if (extras != null) ...extras,
+          ...?extras,
         ],
       ),
     );

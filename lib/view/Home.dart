@@ -7,7 +7,7 @@ import 'package:socialgist/Login.dart';
 import 'package:socialgist/i18n.dart';
 import 'package:socialgist/util/Config.dart';
 import 'package:socialgist/view/Gists.dart';
-import 'package:socialgist/view/Profile.dart';
+import 'package:socialgist/view/MyProfile.dart';
 import 'package:socialgist/widgets/SocialGistLogo.dart';
 
 ///
@@ -124,7 +124,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           Gists(
             homeController: _homeController,
           ),
-          Profile(),
+          MyProfile(),
         ],
       ),
       bottomNavigationBar: SafeArea(

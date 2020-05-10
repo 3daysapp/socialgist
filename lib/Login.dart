@@ -7,7 +7,7 @@ import 'package:i18n_extension/i18n_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socialgist/i18n.dart';
 import 'package:socialgist/util/Config.dart';
-import 'package:socialgist/util/ErrorMessage.dart';
+import 'package:socialgist/util/ColumnMessage.dart';
 import 'package:socialgist/util/WaitingMessage.dart';
 import 'package:socialgist/view/Home.dart';
 import 'package:socialgist/widgets/SocialGistLogo.dart';
@@ -130,22 +130,15 @@ class _LoginState extends State<Login> {
 
                     /// login
                     case Status.login:
-                      return Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            Text(
-                              'You must log in to GitHub.'.i18n,
-                              textAlign: TextAlign.center,
-                            ),
-                            RaisedButton(
-                              key: Key('loginBtn'),
-                              child: Text('Let\'s go'.i18n),
-                              onPressed: _login,
-                            ),
-                          ],
-                        ),
+                      return ColumnMessage(
+                        message: 'You must log in to GitHub.'.i18n,
+                        extras: [
+                          RaisedButton(
+                            key: Key('loginBtn'),
+                            child: Text('Let\'s go'.i18n),
+                            onPressed: _login,
+                          ),
+                        ],
                       );
 
                     /// loading
@@ -154,8 +147,8 @@ class _LoginState extends State<Login> {
 
                     /// error
                     case Status.error:
-                      return ErrorMessage(
-                        _error,
+                      return ColumnMessage(
+                        errorMessage: _error,
                         extras: [
                           RaisedButton(
                             key: Key('loginBtn'),
@@ -169,8 +162,9 @@ class _LoginState extends State<Login> {
                     case Status.redirecting:
                       return WaitingMessage('Redirecting...'.i18n);
                   }
-                  return Center(
-                    child: Text('Something wrong happened.'.i18n),
+
+                  return ColumnMessage(
+                    message: 'Something wrong happened.'.i18n,
                   );
                 },
               ),
@@ -201,13 +195,15 @@ class _LoginState extends State<Login> {
     String url =
         _config.authEndpoint.replace(queryParameters: param).toString();
 
+    if (Config().debug) {
+      print(url.toString());
+    }
+
     if (await canLaunch(url)) {
       if (Config().test) {
         if (Config().testMessage != null) {
           _goHome(Config().testMessage);
           return;
-        } else {
-          print(url.toString());
         }
       } else {
         await launch(
