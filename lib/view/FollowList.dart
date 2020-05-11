@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:socialgist/i18n.dart';
 import 'package:socialgist/model/User.dart';
+import 'package:socialgist/provider/AbstractListProvider.dart';
 import 'package:socialgist/provider/UserProvider.dart';
+import 'package:socialgist/util/ColumnMessage.dart';
 import 'package:socialgist/util/WaitingMessage.dart';
 import 'package:socialgist/view/UserProfile.dart';
 import 'package:socialgist/widgets/DefaultScaffold.dart';
@@ -13,8 +15,7 @@ import 'package:socialgist/widgets/DefaultScaffold.dart';
 ///
 class FollowList extends StatefulWidget {
   final String title;
-  final String endpoint;
-  final String userName;
+  final AbstractListProvider provider;
 
   ///
   ///
@@ -22,8 +23,7 @@ class FollowList extends StatefulWidget {
   const FollowList({
     Key key,
     @required this.title,
-    @required this.endpoint,
-    @required this.userName,
+    @required this.provider,
   }) : super(key: key);
 
   ///
@@ -37,10 +37,10 @@ class FollowList extends StatefulWidget {
 ///
 ///
 class _FollowListState extends State<FollowList> {
-  final List<User> _users = [];
   final List<String> _cacheHit = [];
+  List<User> _users;
   ScrollController _scrollController;
-  UserProvider _provider;
+  AbstractListProvider _providerHolder;
   bool _loading = true;
 
   ///
@@ -49,6 +49,7 @@ class _FollowListState extends State<FollowList> {
   @override
   void initState() {
     super.initState();
+    _providerHolder = widget.provider;
 
     _scrollController = ScrollController();
 
@@ -56,13 +57,12 @@ class _FollowListState extends State<FollowList> {
       if (_scrollController.position.pixels >=
           _scrollController.position.maxScrollExtent -
               (MediaQuery.of(context).size.height * 0.4)) {
-        if (!_loading && _provider.hasNext) {
+        if (!_loading && _providerHolder.hasNext) {
           _nextData();
         }
       }
     });
 
-    _provider = UserProvider(context);
     _loadData();
   }
 
@@ -71,10 +71,8 @@ class _FollowListState extends State<FollowList> {
   ///
   void _loadData() async {
     setState(() => _loading = true);
-    List<User> users = await _provider.getList([
-      widget.userName,
-      widget.endpoint,
-    ]);
+    _users = [];
+    List<User> users = await _providerHolder.get();
     _users.addAll(users);
     setState(() => _loading = false);
   }
@@ -84,10 +82,7 @@ class _FollowListState extends State<FollowList> {
   ///
   Future<void> _nextData() async {
     setState(() => _loading = true);
-    List<User> users = await _provider.getNextList([
-      widget.userName,
-      widget.endpoint,
-    ]);
+    List<User> users = await _providerHolder.next();
     _users.addAll(users);
     setState(() => _loading = false);
   }
@@ -100,8 +95,14 @@ class _FollowListState extends State<FollowList> {
     return DefaultScaffold(
       subtitle: widget.title,
       body: Builder(builder: (context) {
-        if (_users.isEmpty) {
+        if (_users == null) {
           return WaitingMessage('Loading...'.i18n);
+        }
+
+        if (_users.isEmpty) {
+          return ColumnMessage(
+            message: 'Nobody around here.'.i18n,
+          );
         }
 
         return Stack(
@@ -117,7 +118,10 @@ class _FollowListState extends State<FollowList> {
                 }
 
                 return FutureBuilder(
-                  future: UserProvider(context).getObject([user.login]),
+                  future: UserProvider(
+                    context: context,
+                    user: user,
+                  ).getUser(),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       User u = snapshot.data;

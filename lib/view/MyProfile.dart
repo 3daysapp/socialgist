@@ -7,14 +7,6 @@ import 'package:socialgist/util/Config.dart';
 import 'package:socialgist/util/WaitingMessage.dart';
 import 'package:socialgist/widgets/ProfileBody.dart';
 
-/*
-My Gists ??
-
-https://gist.github.com/edufolly/starred
-
-r'<a class="link-overlay" href="https://gist.github.com/(?<user>.*)/(?<gist>.*)">'
- */
-
 ///
 ///
 ///
@@ -35,12 +27,12 @@ class _MyProfileState extends State<MyProfile> {
   ///
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<User>(
-      stream: AuthUserProvider(context).getObject().asStream(),
+    return FutureBuilder<User>(
+      future: AuthUserProvider(context: context).me(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           User me = snapshot.data;
-          Config().login = me.login;
+          Config().me = me;
           return ProfileBody(me);
         }
 

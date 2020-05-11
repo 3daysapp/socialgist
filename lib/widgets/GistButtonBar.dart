@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:socialgist/i18n.dart';
 import 'package:socialgist/model/Gist.dart';
-import 'package:socialgist/provider/PublicGistProvider.dart';
+import 'package:socialgist/provider/GistProvider.dart';
 
 import 'CardButton.dart';
 
@@ -35,9 +35,8 @@ class GistButtonBar extends StatelessWidget {
           label: 'Star'.i18n,
           onPressed: () async {
             try {
-              PublicGistProvider provider = PublicGistProvider(context);
               // ignore: unawaited_futures
-              provider.putEmpty([gist.id, 'star']);
+              GistProvider(context: context).star(gist);
               await controller.forward().orCancel;
               await controller.reverse().orCancel;
             } on TickerCanceled {

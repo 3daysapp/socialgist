@@ -6,12 +6,12 @@ import 'package:socialgist/provider/AbstractListProvider.dart';
 ///
 ///
 ///
-class PublicGistProvider extends AbstractProvider<Gist>
+class StarredGistProvider extends AbstractProvider<Gist>
     with AbstractListProvider<Gist> {
   ///
   ///
   ///
-  PublicGistProvider({
+  StarredGistProvider({
     @required BuildContext context,
     int page,
     int perPage,
@@ -24,18 +24,20 @@ class PublicGistProvider extends AbstractProvider<Gist>
         );
 
   ///
-  /// https://developer.github.com/v3/gists/#list-public-gists
+  /// https://developer.github.com/v3/gists/#list-starred-gists
   ///
+  /// Authenticated User
   @override
   Future<List<Gist>> get() {
-    return getList(path: ['public']);
+    return getList(path: ['starred']);
   }
 
   ///
-  /// https://developer.github.com/v3/gists/#list-public-gists
+  /// https://developer.github.com/v3/gists/#list-starred-gists
   ///
+  /// Authenticated User
   @override
   Future<List<Gist>> next() {
-    return getNextList(path: ['public']);
+    return getNextList(path: ['starred']);
   }
 }

@@ -5,6 +5,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socialgist/Login.dart';
 import 'package:socialgist/i18n.dart';
+import 'package:socialgist/provider/AuthUserProvider.dart';
+import 'package:socialgist/provider/PublicGistProvider.dart';
+import 'package:socialgist/provider/StarredGistProvider.dart';
 import 'package:socialgist/util/Config.dart';
 import 'package:socialgist/view/Gists.dart';
 import 'package:socialgist/view/MyProfile.dart';
@@ -45,8 +48,12 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     _homeController = ValueNotifier(HomeEvent.none);
     _tabController = TabController(
       vsync: this,
-      length: 2,
+      length: 3,
     );
+
+    AuthUserProvider(context: context).me().then((value) {
+      Config().me = value;
+    });
   }
 
   ///
@@ -71,6 +78,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         ],
         bottom: TabBar(
           controller: _tabController,
+          isScrollable: true,
           onTap: (index) async {
             if (index == 0 && _tabController.index == index) {
               _homeController.value = HomeEvent.gistsTabScrollTop;
@@ -81,6 +89,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             }
           },
           tabs: [
+            /// Explore
             Tab(
               key: Key('exploreTab'),
               child: Row(
@@ -98,6 +107,27 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 ],
               ),
             ),
+
+            /// Star
+            Tab(
+              key: Key('starredGistsTab'),
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  FaIcon(
+                    FontAwesomeIcons.solidStar,
+                    semanticLabel: 'Starred Gists'.i18n,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Text('Starred Gists'.i18n),
+                  )
+                ],
+              ),
+            ),
+
+            /// Profile
             Tab(
               key: Key('profileTab'),
               child: Row(
@@ -122,6 +152,16 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         controller: _tabController,
         children: <Widget>[
           Gists(
+            provider: PublicGistProvider(
+              context: context,
+              perPage: 8,
+            ),
+            homeController: _homeController,
+          ),
+          Gists(
+            provider: StarredGistProvider(
+              context: context,
+            ),
             homeController: _homeController,
           ),
           MyProfile(),

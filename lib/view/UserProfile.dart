@@ -53,8 +53,8 @@ class _UserProfileState extends State<UserProfile> {
       body: Builder(
         builder: (context) {
           if (_user.publicRepos == null || _user.publicGists == null) {
-            return StreamBuilder<User>(
-              stream: UserProvider(context).getObject([_user.login]).asStream(),
+            return FutureBuilder<User>(
+              future: UserProvider(context: context, user: _user).getUser(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   _user = snapshot.data;
