@@ -19,6 +19,13 @@ class AuthUserProvider extends AbstractProvider<User> {
   ///
   ///
   ///
+  Future<User> me() {
+    return getObject();
+  }
+
+  ///
+  ///
+  ///
   Future<bool> amIFollowing(User user) {
     return check(['following', user.login]);
   }
@@ -27,13 +34,13 @@ class AuthUserProvider extends AbstractProvider<User> {
   ///
   ///
   Future<bool> unfollow(User user) {
-    return deleteEmpty(['following', user.login]);
+    return delete(['following', user.login]);
   }
 
   ///
   ///
   ///
   Future<bool> follow(User user) {
-    return putEmpty(['following', user.login]);
+    return put(['following', user.login]);
   }
 }

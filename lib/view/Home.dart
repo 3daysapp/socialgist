@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socialgist/Login.dart';
 import 'package:socialgist/i18n.dart';
+import 'package:socialgist/provider/AuthUserProvider.dart';
 import 'package:socialgist/util/Config.dart';
 import 'package:socialgist/view/Gists.dart';
 import 'package:socialgist/view/MyProfile.dart';
@@ -47,6 +48,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       vsync: this,
       length: 2,
     );
+
+    AuthUserProvider(context).me().then((value) {
+      Config().me = value;
+    });
   }
 
   ///

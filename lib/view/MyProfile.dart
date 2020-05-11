@@ -35,12 +35,12 @@ class _MyProfileState extends State<MyProfile> {
   ///
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<User>(
-      stream: AuthUserProvider(context).getObject().asStream(),
+    return FutureBuilder<User>(
+      future: AuthUserProvider(context).me(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           User me = snapshot.data;
-          Config().login = me.login;
+          Config().me = me;
           return ProfileBody(me);
         }
 

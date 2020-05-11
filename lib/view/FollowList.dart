@@ -13,8 +13,8 @@ import 'package:socialgist/widgets/DefaultScaffold.dart';
 ///
 class FollowList extends StatefulWidget {
   final String title;
-  final String endpoint;
-  final String userName;
+  final UserList userList;
+  final User user;
 
   ///
   ///
@@ -22,8 +22,8 @@ class FollowList extends StatefulWidget {
   const FollowList({
     Key key,
     @required this.title,
-    @required this.endpoint,
-    @required this.userName,
+    @required this.userList,
+    @required this.user,
   }) : super(key: key);
 
   ///
@@ -71,10 +71,10 @@ class _FollowListState extends State<FollowList> {
   ///
   void _loadData() async {
     setState(() => _loading = true);
-    List<User> users = await _provider.getList([
-      widget.userName,
-      widget.endpoint,
-    ]);
+    List<User> users = await _provider.getUserList(
+      widget.user,
+      widget.userList,
+    );
     _users.addAll(users);
     setState(() => _loading = false);
   }
@@ -84,10 +84,10 @@ class _FollowListState extends State<FollowList> {
   ///
   Future<void> _nextData() async {
     setState(() => _loading = true);
-    List<User> users = await _provider.getNextList([
-      widget.userName,
-      widget.endpoint,
-    ]);
+    List<User> users = await _provider.getUserNextList(
+      widget.user,
+      widget.userList,
+    );
     _users.addAll(users);
     setState(() => _loading = false);
   }
@@ -117,7 +117,7 @@ class _FollowListState extends State<FollowList> {
                 }
 
                 return FutureBuilder(
-                  future: UserProvider(context).getObject([user.login]),
+                  future: UserProvider(context).getUser(user),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       User u = snapshot.data;

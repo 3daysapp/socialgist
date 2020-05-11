@@ -1,4 +1,5 @@
 import 'package:socialgist/model/ApiUsage.dart';
+import 'package:socialgist/model/User.dart';
 
 class Config {
   static final String WEB = 'web';
@@ -41,7 +42,7 @@ class Config {
 
   String token;
 
-  String login;
+  User me;
 
   ApiUsage apiUsage = ApiUsage(limit: '1', remaining: '0');
 

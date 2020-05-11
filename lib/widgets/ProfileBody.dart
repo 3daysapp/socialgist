@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:socialgist/i18n.dart';
 import 'package:socialgist/model/User.dart';
 import 'package:socialgist/provider/AuthUserProvider.dart';
+import 'package:socialgist/provider/UserProvider.dart';
 import 'package:socialgist/util/Config.dart';
 import 'package:socialgist/view/FollowList.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -63,8 +64,8 @@ class _ProfileBodyState extends State<ProfileBody> {
               MaterialPageRoute(
                 builder: (context) => FollowList(
                   title: 'Following'.i18n,
-                  endpoint: 'following',
-                  userName: widget.user.login,
+                  userList: UserList.following,
+                  user: widget.user,
                 ),
               ),
             )
@@ -76,8 +77,8 @@ class _ProfileBodyState extends State<ProfileBody> {
               MaterialPageRoute(
                 builder: (context) => FollowList(
                   title: 'Followers'.i18n,
-                  endpoint: 'followers',
-                  userName: widget.user.login,
+                  userList: UserList.followers,
+                  user: widget.user,
                 ),
               ),
             )
@@ -227,12 +228,15 @@ class _ProfileBodyState extends State<ProfileBody> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Text(
-                        widget.user.blog,
-                        style: Theme.of(context).textTheme.subtitle1,
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                      Flexible(
+                        flex: 1,
+                        child: Text(
+                          widget.user.blog,
+                          style: Theme.of(context).textTheme.subtitle1,
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       FutureBuilder<bool>(
                         future: canLaunch(widget.user.blog),
@@ -254,7 +258,7 @@ class _ProfileBodyState extends State<ProfileBody> {
                   ),
                 ),
 
-              if (widget.user.login != Config().login)
+              if (widget.user.login != Config().me.login)
                 Padding(
                   padding: const EdgeInsets.only(top: 2.0),
                   child: ButtonBar(

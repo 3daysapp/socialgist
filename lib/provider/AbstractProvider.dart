@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socialgist/Login.dart';
 import 'package:socialgist/model/AbstractModel.dart';
@@ -19,17 +19,22 @@ abstract class AbstractProvider<T extends AbstractModel> {
   /// parameter will return the first page.
   int _page;
 
+  // ignore: unused_field
   int _first;
+
+  // ignore: unused_field
   int _prev;
+
+  //
   int _next;
+
+  //
   int _last;
 
   /// up to 100
   int _perPage;
 
   String _endpoint;
-
-  String _path = '';
 
   T _model;
 
@@ -79,11 +84,13 @@ abstract class AbstractProvider<T extends AbstractModel> {
   ///
   ///
   Uri _internalUri(List<String> paths) {
+    String path = '';
+
     if (paths.isNotEmpty) {
-      _path = '/' + paths.join('/');
+      path = '/' + paths.join('/');
     }
 
-    Uri uri = Uri.parse('${Config().rootEndpoint}/$_endpoint$_path');
+    Uri uri = Uri.parse('${Config().rootEndpoint}/$_endpoint$path');
 
     Map<String, String> queryParameters = {};
 
@@ -108,7 +115,7 @@ abstract class AbstractProvider<T extends AbstractModel> {
   ///
   ///
   Future<dynamic> _internalGet(List<String> paths) async {
-    Response response = await get(
+    http.Response response = await http.get(
       _internalUri(paths),
       headers: _headers,
     );
@@ -200,6 +207,7 @@ abstract class AbstractProvider<T extends AbstractModel> {
   ///
   ///
   ///
+  @protected
   Future<T> getObject([List<String> paths = const []]) async {
     Map<String, dynamic> body = await _internalGet(paths);
     return _model.fromJson(body);
@@ -208,6 +216,7 @@ abstract class AbstractProvider<T extends AbstractModel> {
   ///
   ///
   ///
+  @protected
   Future<List<T>> getList([List<String> paths = const []]) async {
     _page = null;
     List list = await _internalGet(paths);
@@ -217,6 +226,7 @@ abstract class AbstractProvider<T extends AbstractModel> {
   ///
   ///
   ///
+  @protected
   Future<List<T>> getNextList([List<String> paths = const []]) async {
     if (!hasNext) return null;
     _page ??= 1;
@@ -228,12 +238,13 @@ abstract class AbstractProvider<T extends AbstractModel> {
   ///
   ///
   ///
-  Future<bool> putEmpty([List<String> paths = const []]) async {
+  @protected
+  Future<bool> put([List<String> paths = const []]) async {
     Map<String, String> headers = Map.from(_headers);
 
     headers['Content-Length'] = '0';
 
-    Response response = await put(
+    http.Response response = await http.put(
       _internalUri(paths),
       headers: headers,
     );
@@ -244,12 +255,13 @@ abstract class AbstractProvider<T extends AbstractModel> {
   ///
   ///
   ///
-  Future<bool> deleteEmpty([List<String> paths = const []]) async {
+  @protected
+  Future<bool> delete([List<String> paths = const []]) async {
     Map<String, String> headers = Map.from(_headers);
 
     headers['Content-Length'] = '0';
 
-    Response response = await delete(
+    http.Response response = await http.delete(
       _internalUri(paths),
       headers: headers,
     );
@@ -260,12 +272,13 @@ abstract class AbstractProvider<T extends AbstractModel> {
   ///
   ///
   ///
+  @protected
   Future<bool> check([List<String> paths = const []]) async {
     Map<String, String> headers = Map.from(_headers);
 
     headers['Content-Length'] = '0';
 
-    Response response = await get(
+    http.Response response = await http.get(
       _internalUri(paths),
       headers: headers,
     );

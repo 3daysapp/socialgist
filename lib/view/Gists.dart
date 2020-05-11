@@ -3,7 +3,7 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:socialgist/i18n.dart';
 import 'package:socialgist/model/Gist.dart';
-import 'package:socialgist/provider/PublicGistProvider.dart';
+import 'package:socialgist/provider/GistProvider.dart';
 import 'package:socialgist/view/Home.dart';
 import 'package:socialgist/widgets/GistCard.dart';
 
@@ -35,7 +35,7 @@ class _GistsState extends State<Gists> {
   final SplayTreeMap<String, Gist> _gists =
       SplayTreeMap((i, j) => j.compareTo(i));
 
-  PublicGistProvider _provider;
+  GistProvider _provider;
   ScrollController _scrollController;
   bool _loading = true;
 
@@ -47,7 +47,7 @@ class _GistsState extends State<Gists> {
   @override
   void initState() {
     super.initState();
-    _provider = PublicGistProvider(context, perPage: 8);
+    _provider = GistProvider(context, perPage: 8);
     _scrollController = ScrollController();
 
     _scrollController.addListener(() {
@@ -80,7 +80,7 @@ class _GistsState extends State<Gists> {
   ///
   Future<void> _initialData() async {
     setState(() => _loading = true);
-    List<Gist> gists = await _provider.getList(['public']);
+    List<Gist> gists = await _provider.public();
     _gists.clear();
     _gists.addAll({for (Gist gist in gists) gist.createdAt: gist});
     setState(() => _loading = false);
@@ -91,7 +91,7 @@ class _GistsState extends State<Gists> {
   ///
   Future<void> _nextData() async {
     setState(() => _loading = true);
-    List<Gist> gists = await _provider.getNextList(['public']);
+    List<Gist> gists = await _provider.publicNext();
     _gists.addAll({for (Gist gist in gists) gist.createdAt: gist});
     setState(() => _loading = false);
   }
@@ -103,7 +103,7 @@ class _GistsState extends State<Gists> {
   Widget build(BuildContext context) {
     return RefreshIndicator(
       onRefresh: () async {
-        List<Gist> gists = await _provider.getList(['public']);
+        List<Gist> gists = await _provider.public();
         _gists.clear();
         _gists.addAll({for (Gist gist in gists) gist.createdAt: gist});
         setState(() => _loading = false);

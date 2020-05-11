@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:socialgist/model/Gist.dart';
 import 'package:socialgist/i18n.dart';
-import 'package:socialgist/provider/PublicGistProvider.dart';
+import 'package:socialgist/provider/GistProvider.dart';
 import 'package:socialgist/util/ColumnMessage.dart';
 import 'package:socialgist/view/GistDetail.dart';
 import 'package:socialgist/widgets/GistButtonBar.dart';
@@ -95,7 +95,7 @@ class _GistCardState extends State<GistCard> with TickerProviderStateMixin {
   ///
   Widget _getGistFile() {
     return FutureBuilder<Gist>(
-      future: PublicGistProvider(context).getObject([widget.gist.id]),
+      future: GistProvider(context).getById(widget.gist.id),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           localGist = snapshot.data;
