@@ -6,8 +6,10 @@ import 'package:socialgist/model/User.dart';
 import 'package:socialgist/provider/AuthUserProvider.dart';
 import 'package:socialgist/provider/UserFollowersProvider.dart';
 import 'package:socialgist/provider/UserFollowingProvider.dart';
+import 'package:socialgist/provider/UserGistProvider.dart';
 import 'package:socialgist/util/Config.dart';
 import 'package:socialgist/view/FollowList.dart';
+import 'package:socialgist/view/GistList.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 ///
@@ -98,6 +100,16 @@ class _ProfileBodyState extends State<ProfileBody> {
       'Gists'.i18n: {
         'key': Key('gistsCard'),
         'qtd': (widget.user.publicGists ?? 0) + (widget.user.privateGists ?? 0),
+        'onTap': () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => GistList(
+                  provider: UserGistProvider(
+                    context: context,
+                    user: widget.user,
+                  ),
+                ),
+              ),
+            )
       },
     };
     return CustomScrollView(

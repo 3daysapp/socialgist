@@ -112,22 +112,18 @@ class _GistsState extends State<Gists> {
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
-      onRefresh: () async {
-        List<Gist> gists = await _providerHolder.get();
-        _gists.clear();
-        _gists.addAll({for (Gist gist in gists) gist.createdAt: gist});
-        setState(() => _loading = false);
-      },
+      onRefresh: _initialData,
       child: Column(
         children: <Widget>[
           Expanded(
             child: Stack(
               children: <Widget>[
-                ListView(
+                ListView.builder(
                   physics: const AlwaysScrollableScrollPhysics(),
                   controller: _scrollController,
-                  children:
-                      _gists.values.map((gist) => GistCard(gist)).toList(),
+                  itemBuilder: (context, index) =>
+                      GistCard(_gists[_gists.keys.elementAt(index)]),
+                  itemCount: _gists.length,
                 ),
                 AnimatedPositioned(
                   duration: Duration(milliseconds: 250),

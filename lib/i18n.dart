@@ -87,7 +87,11 @@ final t = Translations('en_us') +
     } +
     {
       'en_us': 'Star',
-      'pt_br': 'Star',
+      'pt_br': 'Estrelar',
+    } +
+    {
+      'en_us': 'Starred Gists',
+      'pt_br': 'Gists Estreladas',
     } +
     {
       'en_us': 'Exit',

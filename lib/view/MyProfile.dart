@@ -7,14 +7,6 @@ import 'package:socialgist/util/Config.dart';
 import 'package:socialgist/util/WaitingMessage.dart';
 import 'package:socialgist/widgets/ProfileBody.dart';
 
-/*
-My Gists ??
-
-https://gist.github.com/edufolly/starred
-
-r'<a class="link-overlay" href="https://gist.github.com/(?<user>.*)/(?<gist>.*)">'
- */
-
 ///
 ///
 ///

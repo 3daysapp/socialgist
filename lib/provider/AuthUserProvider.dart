@@ -20,6 +20,7 @@ class AuthUserProvider extends AbstractProvider<User> {
   ///
   /// https://developer.github.com/v3/users/#get-the-authenticated-user
   ///
+  /// Authenticated User
   Future<User> me() {
     return getObject();
   }
