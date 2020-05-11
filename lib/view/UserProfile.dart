@@ -54,7 +54,7 @@ class _UserProfileState extends State<UserProfile> {
         builder: (context) {
           if (_user.publicRepos == null || _user.publicGists == null) {
             return FutureBuilder<User>(
-              future: UserProvider(context).getUser(_user),
+              future: UserProvider(context: context, user: _user).getUser(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   _user = snapshot.data;

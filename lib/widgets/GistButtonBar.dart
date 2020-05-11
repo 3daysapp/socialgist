@@ -36,7 +36,7 @@ class GistButtonBar extends StatelessWidget {
           onPressed: () async {
             try {
               // ignore: unawaited_futures
-              GistProvider(context).star(gist);
+              GistProvider(context: context).star(gist);
               await controller.forward().orCancel;
               await controller.reverse().orCancel;
             } on TickerCanceled {

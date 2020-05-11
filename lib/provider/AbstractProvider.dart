@@ -83,7 +83,7 @@ abstract class AbstractProvider<T extends AbstractModel> {
   ///
   ///
   ///
-  Uri _internalUri(List<String> paths) {
+  Uri _internalUri(List<String> paths, Map<String, String> qs) {
     String path = '';
 
     if (paths.isNotEmpty) {
@@ -93,6 +93,10 @@ abstract class AbstractProvider<T extends AbstractModel> {
     Uri uri = Uri.parse('${Config().rootEndpoint}/$_endpoint$path');
 
     Map<String, String> queryParameters = {};
+
+    if (qs != null && qs.isNotEmpty) {
+      queryParameters.addAll(qs);
+    }
 
     if (_page != null && _page > 0) {
       queryParameters['page'] = _page.toString();
@@ -114,9 +118,12 @@ abstract class AbstractProvider<T extends AbstractModel> {
   ///
   ///
   ///
-  Future<dynamic> _internalGet(List<String> paths) async {
+  Future<dynamic> _internalGet(
+    List<String> path,
+    Map<String, String> qs,
+  ) async {
     http.Response response = await http.get(
-      _internalUri(paths),
+      _internalUri(path, qs),
       headers: _headers,
     );
 
@@ -208,8 +215,11 @@ abstract class AbstractProvider<T extends AbstractModel> {
   ///
   ///
   @protected
-  Future<T> getObject([List<String> paths = const []]) async {
-    Map<String, dynamic> body = await _internalGet(paths);
+  Future<T> getObject({
+    List<String> path = const [],
+    Map<String, String> qs = const {},
+  }) async {
+    Map<String, dynamic> body = await _internalGet(path, qs);
     return _model.fromJson(body);
   }
 
@@ -217,35 +227,76 @@ abstract class AbstractProvider<T extends AbstractModel> {
   ///
   ///
   @protected
-  Future<List<T>> getList([List<String> paths = const []]) async {
+  Future<List<B>> typedList<B extends AbstractModel>({
+    List<String> path = const [],
+    Map<String, String> qs = const {},
+    @required B model,
+  }) async {
     _page = null;
-    List list = await _internalGet(paths);
-    return list.map((body) => (_model.fromJson(body)) as T).toList();
+    List list = await _internalGet(path, qs);
+    return list.map<B>((body) => model.fromJson(body)).toList();
   }
 
   ///
   ///
   ///
   @protected
-  Future<List<T>> getNextList([List<String> paths = const []]) async {
+  Future<List<T>> getList({
+    List<String> path = const [],
+    Map<String, String> qs = const {},
+  }) async {
+    return typedList<T>(
+      path: path,
+      qs: qs,
+      model: _model,
+    );
+  }
+
+  ///
+  ///
+  ///
+  @protected
+  Future<List<B>> typedNextList<B extends AbstractModel>({
+    List<String> path = const [],
+    Map<String, String> qs = const {},
+    @required B model,
+  }) async {
     if (!hasNext) return null;
     _page ??= 1;
     _page++;
-    List list = await _internalGet(paths);
-    return list.map((body) => (_model.fromJson(body)) as T).toList();
+    List list = await _internalGet(path, qs);
+    return list.map<B>((body) => model.fromJson(body)).toList();
   }
 
   ///
   ///
   ///
   @protected
-  Future<bool> put([List<String> paths = const []]) async {
+  Future<List<T>> getNextList({
+    List<String> path = const [],
+    Map<String, String> qs = const {},
+  }) async {
+    return typedNextList<T>(
+      path: path,
+      qs: qs,
+      model: _model,
+    );
+  }
+
+  ///
+  ///
+  ///
+  @protected
+  Future<bool> put({
+    List<String> path = const [],
+    Map<String, String> qs = const {},
+  }) async {
     Map<String, String> headers = Map.from(_headers);
 
     headers['Content-Length'] = '0';
 
     http.Response response = await http.put(
-      _internalUri(paths),
+      _internalUri(path, qs),
       headers: headers,
     );
 
@@ -256,13 +307,16 @@ abstract class AbstractProvider<T extends AbstractModel> {
   ///
   ///
   @protected
-  Future<bool> delete([List<String> paths = const []]) async {
+  Future<bool> delete({
+    List<String> path = const [],
+    Map<String, String> qs = const {},
+  }) async {
     Map<String, String> headers = Map.from(_headers);
 
     headers['Content-Length'] = '0';
 
     http.Response response = await http.delete(
-      _internalUri(paths),
+      _internalUri(path, qs),
       headers: headers,
     );
 
@@ -273,13 +327,16 @@ abstract class AbstractProvider<T extends AbstractModel> {
   ///
   ///
   @protected
-  Future<bool> check([List<String> paths = const []]) async {
+  Future<bool> check({
+    List<String> path = const [],
+    Map<String, String> qs = const {},
+  }) async {
     Map<String, String> headers = Map.from(_headers);
 
     headers['Content-Length'] = '0';
 
     http.Response response = await http.get(
-      _internalUri(paths),
+      _internalUri(path, qs),
       headers: headers,
     );
 

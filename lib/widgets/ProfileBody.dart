@@ -4,7 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:socialgist/i18n.dart';
 import 'package:socialgist/model/User.dart';
 import 'package:socialgist/provider/AuthUserProvider.dart';
-import 'package:socialgist/provider/UserProvider.dart';
+import 'package:socialgist/provider/UserFollowersProvider.dart';
+import 'package:socialgist/provider/UserFollowingProvider.dart';
 import 'package:socialgist/util/Config.dart';
 import 'package:socialgist/view/FollowList.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -47,7 +48,9 @@ class _ProfileBodyState extends State<ProfileBody> {
   ///
   ///
   void _followRefresh() async {
-    bool following = await AuthUserProvider(context).amIFollowing(widget.user);
+    bool following = await AuthUserProvider(
+      context: context,
+    ).amIFollowing(widget.user);
     setState(() => amIFollowing = following);
   }
 
@@ -64,8 +67,10 @@ class _ProfileBodyState extends State<ProfileBody> {
               MaterialPageRoute(
                 builder: (context) => FollowList(
                   title: 'Following'.i18n,
-                  userList: UserList.following,
-                  user: widget.user,
+                  provider: UserFollowingProvider(
+                    context: context,
+                    user: widget.user,
+                  ),
                 ),
               ),
             )
@@ -77,8 +82,10 @@ class _ProfileBodyState extends State<ProfileBody> {
               MaterialPageRoute(
                 builder: (context) => FollowList(
                   title: 'Followers'.i18n,
-                  userList: UserList.followers,
-                  user: widget.user,
+                  provider: UserFollowersProvider(
+                    context: context,
+                    user: widget.user,
+                  ),
                 ),
               ),
             )
@@ -268,16 +275,18 @@ class _ProfileBodyState extends State<ProfileBody> {
                           ? RaisedButton(
                               child: Text('Following'.i18n),
                               onPressed: () async {
-                                await AuthUserProvider(context)
-                                    .unfollow(widget.user);
+                                await AuthUserProvider(
+                                  context: context,
+                                ).unfollow(widget.user);
                                 _followRefresh();
                               },
                             )
                           : RaisedButton(
                               child: Text('Follow'.i18n),
                               onPressed: () async {
-                                await AuthUserProvider(context)
-                                    .follow(widget.user);
+                                await AuthUserProvider(
+                                  context: context,
+                                ).follow(widget.user);
                                 _followRefresh();
                               },
                             ),

@@ -95,7 +95,7 @@ class _GistCardState extends State<GistCard> with TickerProviderStateMixin {
   ///
   Widget _getGistFile() {
     return FutureBuilder<Gist>(
-      future: GistProvider(context).getById(widget.gist.id),
+      future: GistProvider(context: context).getById(widget.gist.id),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           localGist = snapshot.data;

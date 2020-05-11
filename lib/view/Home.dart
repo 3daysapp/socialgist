@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socialgist/Login.dart';
 import 'package:socialgist/i18n.dart';
 import 'package:socialgist/provider/AuthUserProvider.dart';
+import 'package:socialgist/provider/PublicGistProvider.dart';
 import 'package:socialgist/util/Config.dart';
 import 'package:socialgist/view/Gists.dart';
 import 'package:socialgist/view/MyProfile.dart';
@@ -49,7 +50,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       length: 2,
     );
 
-    AuthUserProvider(context).me().then((value) {
+    AuthUserProvider(context: context).me().then((value) {
       Config().me = value;
     });
   }
@@ -127,6 +128,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         controller: _tabController,
         children: <Widget>[
           Gists(
+            provider: PublicGistProvider(
+              context: context,
+              perPage: 8,
+            ),
             homeController: _homeController,
           ),
           MyProfile(),

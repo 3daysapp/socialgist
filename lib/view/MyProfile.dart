@@ -36,7 +36,7 @@ class _MyProfileState extends State<MyProfile> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<User>(
-      future: AuthUserProvider(context).me(),
+      future: AuthUserProvider(context: context).me(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           User me = snapshot.data;
