@@ -92,6 +92,10 @@ final t = Translations('en_us') +
     {
       'en_us': 'Exit',
       'pt_br': 'Sair',
+    } +
+    {
+      'en_us': 'Nobody around here.',
+      'pt_br': 'Ninguém por aqui.',
     };
 
 ///

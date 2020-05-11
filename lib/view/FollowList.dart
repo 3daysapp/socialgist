@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:socialgist/i18n.dart';
 import 'package:socialgist/model/User.dart';
 import 'package:socialgist/provider/UserProvider.dart';
+import 'package:socialgist/util/ColumnMessage.dart';
 import 'package:socialgist/util/WaitingMessage.dart';
 import 'package:socialgist/view/UserProfile.dart';
 import 'package:socialgist/widgets/DefaultScaffold.dart';
@@ -37,8 +38,8 @@ class FollowList extends StatefulWidget {
 ///
 ///
 class _FollowListState extends State<FollowList> {
-  final List<User> _users = [];
   final List<String> _cacheHit = [];
+  List<User> _users;
   ScrollController _scrollController;
   UserProvider _provider;
   bool _loading = true;
@@ -71,6 +72,7 @@ class _FollowListState extends State<FollowList> {
   ///
   void _loadData() async {
     setState(() => _loading = true);
+    _users = [];
     List<User> users = await _provider.getUserList(
       widget.user,
       widget.userList,
@@ -100,8 +102,14 @@ class _FollowListState extends State<FollowList> {
     return DefaultScaffold(
       subtitle: widget.title,
       body: Builder(builder: (context) {
-        if (_users.isEmpty) {
+        if (_users == null) {
           return WaitingMessage('Loading...'.i18n);
+        }
+
+        if (_users.isEmpty) {
+          return ColumnMessage(
+            message: 'Nobody around here.'.i18n,
+          );
         }
 
         return Stack(
