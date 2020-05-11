@@ -117,11 +117,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 children: <Widget>[
                   FaIcon(
                     FontAwesomeIcons.solidStar,
-                    semanticLabel: 'Starred Gists'.i18n,
+                    semanticLabel: 'Starred'.i18n,
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 8.0),
-                    child: Text('Starred Gists'.i18n),
+                    child: Text('Starred'.i18n),
                   )
                 ],
               ),
