@@ -74,7 +74,7 @@ class _GistListState extends State<GistList> {
         if (widget.homeController.value == HomeEvent.gistsTabScrollTop) {
           _scrollController.animateTo(
             0.0,
-            duration: Duration(milliseconds: 1500),
+            duration: Duration(milliseconds: _gists.length * 50),
             curve: Curves.easeInOut,
           );
         }
@@ -93,6 +93,7 @@ class _GistListState extends State<GistList> {
     List<Gist> gists = await _providerHolder.get();
     _gists.clear();
     _gists.addAll({for (Gist gist in gists) gist.createdAt: gist});
+    _scrollController.jumpTo(0.0);
     setState(() => _loading = false);
   }
 
