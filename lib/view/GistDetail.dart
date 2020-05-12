@@ -4,7 +4,7 @@ import 'package:socialgist/model/Gist.dart';
 import 'package:socialgist/view/UserProfile.dart';
 import 'package:socialgist/widgets/DefaultScaffold.dart';
 import 'package:socialgist/widgets/GistButtonBar.dart';
-import 'package:socialgist/widgets/GistDate.dart';
+import 'package:socialgist/widgets/DateFormatted.dart';
 import 'package:socialgist/widgets/GistFile.dart';
 import 'package:socialgist/widgets/GistHeader.dart';
 
@@ -79,7 +79,10 @@ class _GistDetailState extends State<GistDetail> with TickerProviderStateMixin {
                 ),
               ),
 //              if (widget.gist.truncated) Text('Truncado.'),
-              GistDate(widget.gist),
+              DateFormatted(widget.gist.createdAtDate.toLocal()),
+              Container(
+                height: 16.0,
+              ),
             ],
           ),
         ),

@@ -106,6 +106,14 @@ final t = Translations('en_us') +
       'pt_br': 'Sair',
     } +
     {
+      'en_us': 'Share',
+      'pt_br': 'Compartilhar',
+    } +
+    {
+      'en_us': 'Shared from SocialGist',
+      'pt_br': 'Compartilhado por SocialGist',
+    } +
+    {
       'en_us': 'Nobody around here.',
       'pt_br': 'Ninguém por aqui.',
     };

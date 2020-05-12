@@ -6,19 +6,17 @@ import 'package:socialgist/provider/AbstractProvider.dart';
 ///
 ///
 class UserProvider extends AbstractProvider<User> {
-  final User user;
-
   ///
   ///
   ///
   UserProvider({
     @required BuildContext context,
-    @required this.user,
+    @required User user,
     int page,
     int perPage,
   }) : super(
           context: context,
-          endpoint: 'users',
+          endpoint: 'users/${user.login}',
           model: User(),
           page: page,
           perPage: perPage,
@@ -28,6 +26,6 @@ class UserProvider extends AbstractProvider<User> {
   /// https://developer.github.com/v3/users/#get-a-single-user
   ///
   Future<User> getUser() {
-    return getObject(path: [user.login]);
+    return getObject();
   }
 }

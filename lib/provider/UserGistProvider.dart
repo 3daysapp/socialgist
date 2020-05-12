@@ -30,7 +30,7 @@ class UserGistProvider extends UserProvider with AbstractListProvider<Gist> {
   Future<List<Gist>> get() {
     return typedList(
       model: Gist(),
-      path: [user.login, 'gists'],
+      path: ['gists'],
     );
   }
 
@@ -41,7 +41,7 @@ class UserGistProvider extends UserProvider with AbstractListProvider<Gist> {
   Future<List<Gist>> next() {
     return typedNextList(
       model: Gist(),
-      path: [user.login, 'gists'],
+      path: ['gists'],
     );
   }
 }

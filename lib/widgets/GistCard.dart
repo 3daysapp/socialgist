@@ -5,7 +5,7 @@ import 'package:socialgist/provider/GistProvider.dart';
 import 'package:socialgist/util/ColumnMessage.dart';
 import 'package:socialgist/view/GistDetail.dart';
 import 'package:socialgist/widgets/GistButtonBar.dart';
-import 'package:socialgist/widgets/GistDate.dart';
+import 'package:socialgist/widgets/DateFormatted.dart';
 import 'package:socialgist/widgets/GistFile.dart';
 import 'package:socialgist/widgets/GistHeader.dart';
 
@@ -70,7 +70,7 @@ class _GistCardState extends State<GistCard> with TickerProviderStateMixin {
                   _getGistFile(),
 
                   /// Created At
-                  GistDate(widget.gist),
+                  DateFormatted(widget.gist.createdAtDate.toLocal()),
                 ],
               ),
               onTap: () {

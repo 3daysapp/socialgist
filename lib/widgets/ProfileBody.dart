@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:share/share.dart';
 import 'package:socialgist/i18n.dart';
 import 'package:socialgist/model/User.dart';
 import 'package:socialgist/provider/AuthUserProvider.dart';
@@ -8,8 +9,9 @@ import 'package:socialgist/provider/UserFollowersProvider.dart';
 import 'package:socialgist/provider/UserFollowingProvider.dart';
 import 'package:socialgist/provider/UserGistProvider.dart';
 import 'package:socialgist/util/Config.dart';
+import 'package:socialgist/util/ProfileHeroImage.dart';
 import 'package:socialgist/view/FollowList.dart';
-import 'package:socialgist/view/GistList.dart';
+import 'package:socialgist/view/UserGist.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 ///
@@ -53,7 +55,7 @@ class _ProfileBodyState extends State<ProfileBody> {
     bool following = await AuthUserProvider(
       context: context,
     ).amIFollowing(widget.user);
-    setState(() => amIFollowing = following);
+    if (mounted) setState(() => amIFollowing = following);
   }
 
   ///
@@ -75,7 +77,7 @@ class _ProfileBodyState extends State<ProfileBody> {
                   ),
                 ),
               ),
-            )
+            ),
       },
       'Followers'.i18n: {
         'key': Key('followersCard'),
@@ -90,7 +92,7 @@ class _ProfileBodyState extends State<ProfileBody> {
                   ),
                 ),
               ),
-            )
+            ),
       },
       'Repositories'.i18n: {
         'key': Key('repositoriesCard'),
@@ -102,14 +104,14 @@ class _ProfileBodyState extends State<ProfileBody> {
         'qtd': (widget.user.publicGists ?? 0) + (widget.user.privateGists ?? 0),
         'onTap': () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => GistList(
+                builder: (context) => UserGist(
                   provider: UserGistProvider(
                     context: context,
                     user: widget.user,
                   ),
                 ),
               ),
-            )
+            ),
       },
     };
     return CustomScrollView(
@@ -148,16 +150,28 @@ class _ProfileBodyState extends State<ProfileBody> {
                         ? Expanded(
                             /// CircleAvatar as a parent with a larger size and
                             /// background color to create a border effect.
-                            child: CircleAvatar(
-                              backgroundColor: Theme.of(context).accentColor,
-                              minRadius: 22.0,
-                              maxRadius: 52.0,
+                            child: GestureDetector(
+                              onTap: () {
+                                ProfileHeroImage.show(
+                                  context: context,
+                                  tag: 'profilePhoto',
+                                  image: NetworkImage(widget.user.avatarUrl),
+                                );
+                              },
                               child: CircleAvatar(
-                                backgroundColor: Colors.black54,
-                                backgroundImage:
-                                    NetworkImage(widget.user.avatarUrl),
-                                minRadius: 20.0,
-                                maxRadius: 50.0,
+                                backgroundColor: Theme.of(context).accentColor,
+                                minRadius: 22.0,
+                                maxRadius: 52.0,
+                                child: Hero(
+                                  tag: 'profilePhoto',
+                                  child: CircleAvatar(
+                                    backgroundColor: Colors.black,
+                                    backgroundImage:
+                                        NetworkImage(widget.user.avatarUrl),
+                                    minRadius: 20.0,
+                                    maxRadius: 50.0,
+                                  ),
+                                ),
                               ),
                             ),
                           )
@@ -277,15 +291,19 @@ class _ProfileBodyState extends State<ProfileBody> {
                   ),
                 ),
 
-              if (widget.user.login != Config().me.login)
-                Padding(
-                  padding: const EdgeInsets.only(top: 2.0),
-                  child: ButtonBar(
-                    alignment: MainAxisAlignment.center,
-                    children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(top: 2.0),
+                child: ButtonBar(
+                  alignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    if (widget.user.login != Config().me.login)
                       amIFollowing
-                          ? RaisedButton(
-                              child: Text('Following'.i18n),
+                          ? FlatButton.icon(
+                              icon: FaIcon(
+                                FontAwesomeIcons.userMinus,
+                                color: softWhite,
+                              ),
+                              label: Text('Following'.i18n),
                               onPressed: () async {
                                 await AuthUserProvider(
                                   context: context,
@@ -293,8 +311,12 @@ class _ProfileBodyState extends State<ProfileBody> {
                                 _followRefresh();
                               },
                             )
-                          : RaisedButton(
-                              child: Text('Follow'.i18n),
+                          : FlatButton.icon(
+                              icon: FaIcon(
+                                FontAwesomeIcons.userPlus,
+                                color: softWhite,
+                              ),
+                              label: Text('Follow'.i18n),
                               onPressed: () async {
                                 await AuthUserProvider(
                                   context: context,
@@ -302,9 +324,20 @@ class _ProfileBodyState extends State<ProfileBody> {
                                 _followRefresh();
                               },
                             ),
-                    ],
-                  ),
+                    FlatButton.icon(
+                      onPressed: () => Share.share(
+                        widget.user.htmlUrl,
+                        subject: 'Shared from SocialGist'.i18n,
+                      ),
+                      icon: FaIcon(
+                        FontAwesomeIcons.shareAlt,
+                        color: softWhite,
+                      ),
+                      label: Text('Share'.i18n),
+                    ),
+                  ],
                 ),
+              ),
             ],
           ),
         ),

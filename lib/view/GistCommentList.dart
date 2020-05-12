@@ -1,26 +1,25 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:socialgist/i18n.dart';
-import 'package:socialgist/model/User.dart';
+import 'package:socialgist/model/GistComment.dart';
 import 'package:socialgist/provider/AbstractListProvider.dart';
-import 'package:socialgist/provider/UserProvider.dart';
 import 'package:socialgist/util/ColumnMessage.dart';
 import 'package:socialgist/util/WaitingMessage.dart';
+import 'package:socialgist/widgets/DateFormatted.dart';
 import 'package:socialgist/widgets/DefaultScaffold.dart';
 import 'package:socialgist/widgets/UserTile.dart';
 
 ///
 ///
 ///
-class FollowList extends StatefulWidget {
+class GistCommentList extends StatefulWidget {
   final String title;
   final AbstractListProvider provider;
 
   ///
   ///
   ///
-  const FollowList({
+  const GistCommentList({
     Key key,
     @required this.title,
     @required this.provider,
@@ -30,22 +29,18 @@ class FollowList extends StatefulWidget {
   ///
   ///
   @override
-  _FollowListState createState() => _FollowListState();
+  _GistCommentListState createState() => _GistCommentListState();
 }
 
 ///
 ///
 ///
-class _FollowListState extends State<FollowList> {
-  final List<String> _cacheHit = [];
-  List<User> _users;
+class _GistCommentListState extends State<GistCommentList> {
+  List<GistComment> _comments;
   ScrollController _scrollController;
   AbstractListProvider _providerHolder;
   bool _loading = true;
 
-  ///
-  ///
-  ///
   @override
   void initState() {
     super.initState();
@@ -71,9 +66,9 @@ class _FollowListState extends State<FollowList> {
   ///
   void _loadData() async {
     if (mounted) setState(() => _loading = true);
-    _users = [];
-    List<User> users = await _providerHolder.get();
-    _users.addAll(users);
+    _comments = [];
+    List<GistComment> comments = await _providerHolder.get();
+    _comments.addAll(comments);
     if (mounted) setState(() => _loading = false);
   }
 
@@ -82,8 +77,8 @@ class _FollowListState extends State<FollowList> {
   ///
   Future<void> _nextData() async {
     if (mounted) setState(() => _loading = true);
-    List<User> users = await _providerHolder.next();
-    _users.addAll(users);
+    List<GistComment> comments = await _providerHolder.next();
+    _comments.addAll(comments);
     if (mounted) setState(() => _loading = false);
   }
 
@@ -95,11 +90,11 @@ class _FollowListState extends State<FollowList> {
     return DefaultScaffold(
       subtitle: widget.title,
       body: Builder(builder: (context) {
-        if (_users == null) {
+        if (_comments == null) {
           return WaitingMessage('Loading...'.i18n);
         }
 
-        if (_users.isEmpty) {
+        if (_comments.isEmpty) {
           return ColumnMessage(
             message: 'Nobody around here.'.i18n,
           );
@@ -107,38 +102,46 @@ class _FollowListState extends State<FollowList> {
 
         return Stack(
           children: <Widget>[
-            ListView.separated(
+            ListView.builder(
               physics: const AlwaysScrollableScrollPhysics(),
               controller: _scrollController,
               itemBuilder: (context, index) {
-                User user = _users[index];
+                GistComment comment = _comments[index];
 
-                if (_cacheHit.contains(user.login)) {
-                  return UserTile(user);
-                }
-
-                return FutureBuilder(
-                  future: UserProvider(
-                    context: context,
-                    user: user,
-                  ).getUser(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      User u = snapshot.data;
-                      _users[index] = u;
-                      _cacheHit.add(user.login);
-                      return UserTile(u);
-                    }
-
-                    return ListTile(
-                      title: Text('Loading...'.i18n),
-                      subtitle: Text(user.login),
-                    );
-                  },
+                return Card(
+                  margin: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: <Widget>[
+                      UserTile(comment.user),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          padding: const EdgeInsets.all(4.0),
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              width: 1.0,
+                              color: Colors.white24,
+                            ),
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(8.0),
+                            ),
+                          ),
+                          child: Text(
+                            comment.body ?? '',
+                            style: GoogleFonts.firaMono(fontSize: 12.0),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: DateFormatted(comment.updatedAtDate.toLocal()),
+                      ),
+                    ],
+                  ),
                 );
               },
-              separatorBuilder: (context, index) => Divider(),
-              itemCount: _users.length,
+              itemCount: _comments.length,
             ),
             AnimatedPositioned(
               duration: Duration(milliseconds: 250),
@@ -165,14 +168,5 @@ class _FollowListState extends State<FollowList> {
         );
       }),
     );
-  }
-
-  ///
-  ///
-  ///
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
   }
 }
