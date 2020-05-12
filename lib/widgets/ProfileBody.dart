@@ -75,7 +75,7 @@ class _ProfileBodyState extends State<ProfileBody> {
                   ),
                 ),
               ),
-            )
+            ),
       },
       'Followers'.i18n: {
         'key': Key('followersCard'),
@@ -90,7 +90,7 @@ class _ProfileBodyState extends State<ProfileBody> {
                   ),
                 ),
               ),
-            )
+            ),
       },
       'Repositories'.i18n: {
         'key': Key('repositoriesCard'),
@@ -109,7 +109,7 @@ class _ProfileBodyState extends State<ProfileBody> {
                   ),
                 ),
               ),
-            )
+            ),
       },
     };
     return CustomScrollView(

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:socialgist/i18n.dart';
 import 'package:socialgist/model/Gist.dart';
+import 'package:socialgist/provider/GistCommentProvider.dart';
 import 'package:socialgist/provider/GistProvider.dart';
+import 'package:socialgist/view/GistCommentList.dart';
 
 import 'CardButton.dart';
 
@@ -20,16 +22,31 @@ class GistButtonBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return ButtonBar(
       children: <Widget>[
+        /// Files
         CardButton(
           iconData: FontAwesomeIcons.solidFile,
           label: '%d Files'.plural(gist.files.length),
           onPressed: null,
         ),
+
+        /// Comments
         CardButton(
           iconData: FontAwesomeIcons.solidComments,
           label: '%d Comments'.plural(gist.comments),
-          onPressed: null,
+          onPressed: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => GistCommentList(
+                title: 'Comments'.i18n,
+                provider: GistCommentProvider(
+                  context: context,
+                  gist: gist,
+                ),
+              ),
+            ),
+          ),
         ),
+
+        /// Star
         CardButton(
           iconData: FontAwesomeIcons.solidStar,
           label: 'Star'.i18n,

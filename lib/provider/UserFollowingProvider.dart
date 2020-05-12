@@ -30,7 +30,7 @@ class UserFollowingProvider extends UserProvider
   Future<List<User>> get() {
     return typedList(
       model: User(),
-      path: [user.login, 'following'],
+      path: ['following'],
     );
   }
 
@@ -41,7 +41,7 @@ class UserFollowingProvider extends UserProvider
   Future<List<User>> next() {
     return typedNextList(
       model: User(),
-      path: [user.login, 'following'],
+      path: ['following'],
     );
   }
 }

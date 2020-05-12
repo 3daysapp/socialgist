@@ -23,6 +23,9 @@ class Gist extends AbstractModel<Gist> {
   User owner;
   bool truncated;
 
+  ///
+  ///
+  ///
   Gist({
     this.url,
     this.forksUrl,
@@ -101,6 +104,9 @@ class Gist extends AbstractModel<Gist> {
     return data;
   }
 
+  ///
+  ///
+  ///
   DateTime get createdAtDate => DateTime.parse(createdAt);
 
   ///

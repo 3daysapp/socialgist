@@ -68,7 +68,7 @@ class GistFile extends StatelessWidget {
                   child: Text(
                     file.filename,
                     style: Theme.of(context).textTheme.subtitle1,
-                    maxLines: 1,
+                    maxLines: height==null ? 10 : 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -80,7 +80,7 @@ class GistFile extends StatelessWidget {
                       fontSize: 12.0,
                       fontWeight: FontWeight.w200,
                     ),
-                    maxLines: 1,
+                    maxLines: height==null ? 10 : 1,
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.end,
                   ),

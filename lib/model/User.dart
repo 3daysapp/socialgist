@@ -46,7 +46,6 @@ class User extends AbstractModel<User> {
   ///
   ///
   ///
-
   User({
     this.login,
     this.id,

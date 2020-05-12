@@ -68,6 +68,7 @@ class CodeHighlight extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: height,
+      padding: const EdgeInsets.all(4.0),
       decoration: BoxDecoration(
         border: Border.all(
           width: 1.0,
@@ -77,15 +78,12 @@ class CodeHighlight extends StatelessWidget {
           Radius.circular(8.0),
         ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(4.0),
-        child: HighlightView(
-          content,
-          language: lang ?? 'plaintext',
-          theme: myTheme,
-          textStyle: GoogleFonts.firaMono(fontSize: 12.0),
-          tabSize: tabSize,
-        ),
+      child: HighlightView(
+        content,
+        language: lang ?? 'plaintext',
+        theme: myTheme,
+        textStyle: GoogleFonts.firaMono(fontSize: 12.0),
+        tabSize: tabSize,
       ),
     );
   }
