@@ -9,7 +9,7 @@ import 'package:socialgist/provider/AuthUserProvider.dart';
 import 'package:socialgist/provider/PublicGistProvider.dart';
 import 'package:socialgist/provider/StarredGistProvider.dart';
 import 'package:socialgist/util/Config.dart';
-import 'package:socialgist/view/Gists.dart';
+import 'package:socialgist/view/GistList.dart';
 import 'package:socialgist/view/MyProfile.dart';
 import 'package:socialgist/widgets/SocialGistLogo.dart';
 
@@ -151,19 +151,24 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       body: TabBarView(
         controller: _tabController,
         children: <Widget>[
-          Gists(
+          /// Explore Public Gists
+          GistList(
             provider: PublicGistProvider(
               context: context,
               perPage: 8,
             ),
             homeController: _homeController,
           ),
-          Gists(
+
+          /// User Starred Gists
+          GistList(
             provider: StarredGistProvider(
               context: context,
             ),
             homeController: _homeController,
           ),
+
+          /// User Profile
           MyProfile(),
         ],
       ),

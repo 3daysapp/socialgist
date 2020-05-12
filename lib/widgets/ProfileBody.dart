@@ -9,7 +9,7 @@ import 'package:socialgist/provider/UserFollowingProvider.dart';
 import 'package:socialgist/provider/UserGistProvider.dart';
 import 'package:socialgist/util/Config.dart';
 import 'package:socialgist/view/FollowList.dart';
-import 'package:socialgist/view/GistList.dart';
+import 'package:socialgist/view/UserGist.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 ///
@@ -102,7 +102,7 @@ class _ProfileBodyState extends State<ProfileBody> {
         'qtd': (widget.user.publicGists ?? 0) + (widget.user.privateGists ?? 0),
         'onTap': () => Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => GistList(
+                builder: (context) => UserGist(
                   provider: UserGistProvider(
                     context: context,
                     user: widget.user,
