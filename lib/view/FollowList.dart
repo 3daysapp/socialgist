@@ -70,21 +70,21 @@ class _FollowListState extends State<FollowList> {
   ///
   ///
   void _loadData() async {
-    setState(() => _loading = true);
+    if (mounted) setState(() => _loading = true);
     _users = [];
     List<User> users = await _providerHolder.get();
     _users.addAll(users);
-    setState(() => _loading = false);
+    if (mounted) setState(() => _loading = false);
   }
 
   ///
   ///
   ///
   Future<void> _nextData() async {
-    setState(() => _loading = true);
+    if (mounted) setState(() => _loading = true);
     List<User> users = await _providerHolder.next();
     _users.addAll(users);
-    setState(() => _loading = false);
+    if (mounted) setState(() => _loading = false);
   }
 
   ///

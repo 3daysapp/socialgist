@@ -89,19 +89,19 @@ class _GistListState extends State<GistList> {
   ///
   ///
   Future<void> _initialData() async {
-    setState(() => _loading = true);
+    if (mounted) setState(() => _loading = true);
     List<Gist> gists = await _providerHolder.get();
     _gists.clear();
     _gists.addAll({for (Gist gist in gists) gist.createdAt: gist});
-    _scrollController.jumpTo(0.0);
-    setState(() => _loading = false);
+    if (mounted) _scrollController.jumpTo(0.0);
+    if (mounted) setState(() => _loading = false);
   }
 
   ///
   ///
   ///
   Future<void> _nextData() async {
-    setState(() => _loading = true);
+    if (mounted) setState(() => _loading = true);
     String oldKey = _gists.lastKey();
     String newKey = _gists.lastKey();
     DateTime lastDate = _gists[oldKey].createdAtDate;
@@ -120,7 +120,7 @@ class _GistListState extends State<GistList> {
 
     if (trying < 1) await _initialData();
 
-    setState(() => _loading = false);
+    if (mounted) setState(() => _loading = false);
   }
 
   ///

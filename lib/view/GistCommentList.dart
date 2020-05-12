@@ -65,21 +65,21 @@ class _GistCommentListState extends State<GistCommentList> {
   ///
   ///
   void _loadData() async {
-    setState(() => _loading = true);
+    if (mounted) setState(() => _loading = true);
     _comments = [];
     List<GistComment> comments = await _providerHolder.get();
     _comments.addAll(comments);
-    setState(() => _loading = false);
+    if (mounted) setState(() => _loading = false);
   }
 
   ///
   ///
   ///
   Future<void> _nextData() async {
-    setState(() => _loading = true);
+    if (mounted) setState(() => _loading = true);
     List<GistComment> comments = await _providerHolder.next();
     _comments.addAll(comments);
-    setState(() => _loading = false);
+    if (mounted) setState(() => _loading = false);
   }
 
   ///

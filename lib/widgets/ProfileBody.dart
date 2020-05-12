@@ -8,6 +8,7 @@ import 'package:socialgist/provider/UserFollowersProvider.dart';
 import 'package:socialgist/provider/UserFollowingProvider.dart';
 import 'package:socialgist/provider/UserGistProvider.dart';
 import 'package:socialgist/util/Config.dart';
+import 'package:socialgist/util/ProfileHeroImage.dart';
 import 'package:socialgist/view/FollowList.dart';
 import 'package:socialgist/view/UserGist.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -53,7 +54,7 @@ class _ProfileBodyState extends State<ProfileBody> {
     bool following = await AuthUserProvider(
       context: context,
     ).amIFollowing(widget.user);
-    setState(() => amIFollowing = following);
+    if (mounted) setState(() => amIFollowing = following);
   }
 
   ///
@@ -148,16 +149,28 @@ class _ProfileBodyState extends State<ProfileBody> {
                         ? Expanded(
                             /// CircleAvatar as a parent with a larger size and
                             /// background color to create a border effect.
-                            child: CircleAvatar(
-                              backgroundColor: Theme.of(context).accentColor,
-                              minRadius: 22.0,
-                              maxRadius: 52.0,
+                            child: GestureDetector(
+                              onTap: () {
+                                ProfileHeroImage.show(
+                                  context: context,
+                                  tag: 'profilePhoto',
+                                  image: NetworkImage(widget.user.avatarUrl),
+                                );
+                              },
                               child: CircleAvatar(
-                                backgroundColor: Colors.black54,
-                                backgroundImage:
-                                    NetworkImage(widget.user.avatarUrl),
-                                minRadius: 20.0,
-                                maxRadius: 50.0,
+                                backgroundColor: Theme.of(context).accentColor,
+                                minRadius: 22.0,
+                                maxRadius: 52.0,
+                                child: Hero(
+                                  tag: 'profilePhoto',
+                                  child: CircleAvatar(
+                                    backgroundColor: Colors.black,
+                                    backgroundImage:
+                                        NetworkImage(widget.user.avatarUrl),
+                                    minRadius: 20.0,
+                                    maxRadius: 50.0,
+                                  ),
+                                ),
                               ),
                             ),
                           )
