@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:share/share.dart';
 import 'package:socialgist/i18n.dart';
 import 'package:socialgist/model/User.dart';
 import 'package:socialgist/provider/AuthUserProvider.dart';
@@ -290,15 +291,19 @@ class _ProfileBodyState extends State<ProfileBody> {
                   ),
                 ),
 
-              if (widget.user.login != Config().me.login)
-                Padding(
-                  padding: const EdgeInsets.only(top: 2.0),
-                  child: ButtonBar(
-                    alignment: MainAxisAlignment.center,
-                    children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(top: 2.0),
+                child: ButtonBar(
+                  alignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    if (widget.user.login != Config().me.login)
                       amIFollowing
-                          ? RaisedButton(
-                              child: Text('Following'.i18n),
+                          ? FlatButton.icon(
+                              icon: FaIcon(
+                                FontAwesomeIcons.userMinus,
+                                color: softWhite,
+                              ),
+                              label: Text('Following'.i18n),
                               onPressed: () async {
                                 await AuthUserProvider(
                                   context: context,
@@ -306,8 +311,12 @@ class _ProfileBodyState extends State<ProfileBody> {
                                 _followRefresh();
                               },
                             )
-                          : RaisedButton(
-                              child: Text('Follow'.i18n),
+                          : FlatButton.icon(
+                              icon: FaIcon(
+                                FontAwesomeIcons.userPlus,
+                                color: softWhite,
+                              ),
+                              label: Text('Follow'.i18n),
                               onPressed: () async {
                                 await AuthUserProvider(
                                   context: context,
@@ -315,9 +324,20 @@ class _ProfileBodyState extends State<ProfileBody> {
                                 _followRefresh();
                               },
                             ),
-                    ],
-                  ),
+                    FlatButton.icon(
+                      onPressed: () => Share.share(
+                        widget.user.htmlUrl,
+                        subject: 'Shared from SocialGist'.i18n,
+                      ),
+                      icon: FaIcon(
+                        FontAwesomeIcons.shareAlt,
+                        color: softWhite,
+                      ),
+                      label: Text('Share'.i18n),
+                    ),
+                  ],
                 ),
+              ),
             ],
           ),
         ),
