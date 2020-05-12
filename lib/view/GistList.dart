@@ -101,8 +101,24 @@ class _GistListState extends State<GistList> {
   ///
   Future<void> _nextData() async {
     setState(() => _loading = true);
-    List<Gist> gists = await _providerHolder.next();
-    _gists.addAll({for (Gist gist in gists) gist.createdAt: gist});
+    String oldKey = _gists.lastKey();
+    String newKey = _gists.lastKey();
+    DateTime lastDate = _gists[oldKey].createdAtDate;
+    int trying = 15;
+
+    while (oldKey == newKey && trying > 0) {
+      List<Gist> gists = await _providerHolder.next();
+      for (Gist gist in gists) {
+        if (gist.createdAtDate.isBefore(lastDate)) {
+          _gists[gist.createdAt] = gist;
+        }
+      }
+      newKey = _gists.lastKey();
+      trying--;
+    }
+
+    if (trying < 1) await _initialData();
+
     setState(() => _loading = false);
   }
 
@@ -121,8 +137,13 @@ class _GistListState extends State<GistList> {
                 ListView.builder(
                   physics: const AlwaysScrollableScrollPhysics(),
                   controller: _scrollController,
-                  itemBuilder: (context, index) =>
-                      GistCard(_gists[_gists.keys.elementAt(index)]),
+                  itemBuilder: (context, index) {
+                    String key = _gists.keys.elementAt(index);
+                    return GistCard(
+                      _gists[key],
+                      key: Key(key),
+                    );
+                  },
                   itemCount: _gists.length,
                 ),
                 AnimatedPositioned(
