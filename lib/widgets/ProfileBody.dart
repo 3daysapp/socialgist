@@ -297,14 +297,16 @@ class _ProfileBodyState extends State<ProfileBody> {
 
               Padding(
                 padding: const EdgeInsets.only(top: 2.0),
-                child: ButtonBar(
-                  alignment: MainAxisAlignment.center,
+                child: Wrap(
+                  alignment: WrapAlignment.center,
                   children: <Widget>[
+
+                    /// Follow
                     if (widget.user.login != Config().me.login)
                       amIFollowing
                           ? FlatButton.icon(
                               icon: FaIcon(
-                                FontAwesomeIcons.userMinus,
+                                FontAwesomeIcons.solidUser,
                                 color: softWhite,
                               ),
                               label: Text('Following'.i18n),
@@ -328,17 +330,20 @@ class _ProfileBodyState extends State<ProfileBody> {
                                 _followRefresh();
                               },
                             ),
-                    FlatButton.icon(
-                      onPressed: () => Share.share(
-                        widget.user.htmlUrl,
-                        subject: 'Shared from SocialGist'.i18n,
+
+                    /// Share
+                    if (!Config().isWeb)
+                      FlatButton.icon(
+                        onPressed: () => Share.share(
+                          widget.user.htmlUrl,
+                          subject: 'Shared from SocialGist'.i18n,
+                        ),
+                        icon: FaIcon(
+                          FontAwesomeIcons.shareAlt,
+                          color: softWhite,
+                        ),
+                        label: Text('Share'.i18n),
                       ),
-                      icon: FaIcon(
-                        FontAwesomeIcons.shareAlt,
-                        color: softWhite,
-                      ),
-                      label: Text('Share'.i18n),
-                    ),
                   ],
                 ),
               ),
