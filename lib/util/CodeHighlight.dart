@@ -42,6 +42,12 @@ class CodeHighlight extends StatelessWidget {
         case 'C':
           lang = 'cpp';
           break;
+        case 'C#':
+          lang = 'cs';
+          break;
+        case 'F#':
+          lang = 'fsharp';
+          break;
         case 'PLpgSQL':
           lang = 'sql';
           break;
