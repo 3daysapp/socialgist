@@ -1,5 +1,6 @@
-![Logo](web/icons/Icon-192.png)
 # **Social**Gist
+
+![Logo](web/icons/Icon-192.png)
 
 O SocialGist é um aplicativo semelhante ao Instagram voltado para desenvolvedores onde você pode explorar a lista de descoberta de Gists do Github e interagir com eles.
 
