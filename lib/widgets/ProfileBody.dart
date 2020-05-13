@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -155,7 +156,9 @@ class _ProfileBodyState extends State<ProfileBody> {
                                 ProfileHeroImage.show(
                                   context: context,
                                   tag: 'profilePhoto',
-                                  image: NetworkImage(widget.user.avatarUrl),
+                                  image: CachedNetworkImageProvider(
+                                    widget.user.avatarUrl,
+                                  ),
                                 );
                               },
                               child: CircleAvatar(
@@ -166,8 +169,9 @@ class _ProfileBodyState extends State<ProfileBody> {
                                   tag: 'profilePhoto',
                                   child: CircleAvatar(
                                     backgroundColor: Colors.black,
-                                    backgroundImage:
-                                        NetworkImage(widget.user.avatarUrl),
+                                    backgroundImage: CachedNetworkImageProvider(
+                                      widget.user.avatarUrl,
+                                    ),
                                     minRadius: 20.0,
                                     maxRadius: 50.0,
                                   ),
