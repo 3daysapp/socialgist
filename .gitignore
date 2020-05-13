@@ -56,3 +56,4 @@ test_driver/secret.dart
 
 # Exceptions to above rules.
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
+/ios/fastlane/Appfile
