@@ -27,7 +27,7 @@ final t = Translations('en_us') +
     } +
     {
       'en_us': 'You must log in to GitHub.',
-      'pt_br': 'É necessário realizar o autenticar no GitHub.',
+      'pt_br': 'É necessário autenticar no GitHub.',
     } +
     {
       'en_us': 'Something wrong happened.',
