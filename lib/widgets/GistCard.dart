@@ -120,7 +120,7 @@ class _GistCardState extends State<GistCard> with TickerProviderStateMixin {
         }
 
         return Container(
-          height: fileHeight + 10.0,
+          height: fileHeight + 8, // Todo - Doing scroll steps.
           child: Center(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
