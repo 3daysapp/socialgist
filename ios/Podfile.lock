@@ -1,5 +1,8 @@
 PODS:
   - Flutter (1.0.0)
+  - FMDB (2.7.5):
+    - FMDB/standard (= 2.7.5)
+  - FMDB/standard (2.7.5)
   - path_provider (0.0.1):
     - Flutter
   - path_provider_macos (0.0.1):
@@ -12,6 +15,9 @@ PODS:
     - Flutter
   - shared_preferences_web (0.0.1):
     - Flutter
+  - sqflite (0.0.1):
+    - Flutter
+    - FMDB (~> 2.7.2)
   - url_launcher (0.0.1):
     - Flutter
   - url_launcher_macos (0.0.1):
@@ -27,9 +33,14 @@ DEPENDENCIES:
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
   - shared_preferences_macos (from `.symlinks/plugins/shared_preferences_macos/ios`)
   - shared_preferences_web (from `.symlinks/plugins/shared_preferences_web/ios`)
+  - sqflite (from `.symlinks/plugins/sqflite/ios`)
   - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
   - url_launcher_macos (from `.symlinks/plugins/url_launcher_macos/ios`)
   - url_launcher_web (from `.symlinks/plugins/url_launcher_web/ios`)
+
+SPEC REPOS:
+  trunk:
+    - FMDB
 
 EXTERNAL SOURCES:
   Flutter:
@@ -46,6 +57,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/shared_preferences_macos/ios"
   shared_preferences_web:
     :path: ".symlinks/plugins/shared_preferences_web/ios"
+  sqflite:
+    :path: ".symlinks/plugins/sqflite/ios"
   url_launcher:
     :path: ".symlinks/plugins/url_launcher/ios"
   url_launcher_macos:
@@ -55,12 +68,14 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   path_provider: fb74bd0465e96b594bb3b5088ee4a4e7bb1f2a9d
   path_provider_macos: f760a3c5b04357c380e2fddb6f9db6f3015897e0
   share: 0b2c3e82132f5888bccca3351c504d0003b3b410
   shared_preferences: af6bfa751691cdc24be3045c43ec037377ada40d
   shared_preferences_macos: f3f29b71ccbb56bf40c9dd6396c9acf15e214087
   shared_preferences_web: 141cce0c3ed1a1c5bf2a0e44f52d31eeb66e5ea9
+  sqflite: 4001a31ff81d210346b500c55b17f4d6c7589dd0
   url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef
   url_launcher_macos: fd7894421cd39320dce5f292fc99ea9270b2a313
   url_launcher_web: e5527357f037c87560776e36436bf2b0288b965c

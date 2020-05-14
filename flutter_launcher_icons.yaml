@@ -1,6 +1,6 @@
 flutter_icons:
   android: false
   ios: true
-  image_path: "assets/images/socialgist-logo-full.png"
+  image_path: "assets/images/socialgist-logo-full-no-alpha.png"
 #  adaptive_icon_background: "#424242"
 #  adaptive_icon_foreground: "assets/images/icon-foreground.png"
