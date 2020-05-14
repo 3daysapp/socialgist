@@ -110,7 +110,7 @@ abstract class AbstractProvider<T extends AbstractModel> {
       uri = uri.replace(queryParameters: queryParameters);
     }
 
-    print('Uri: $uri');
+    if (Config().debug) print('Uri: $uri');
 
     return uri;
   }
@@ -122,12 +122,14 @@ abstract class AbstractProvider<T extends AbstractModel> {
     List<String> path,
     Map<String, String> qs,
   ) async {
+    Uri uri = _internalUri(path, qs);
+
     http.Response response = await http.get(
-      _internalUri(path, qs),
+      uri,
       headers: _headers,
     );
 
-    if (response.statusCode != 200) {
+    if (response.statusCode != 200 && Config().debug) {
       print('Get Status Code: ${response.statusCode}');
     }
 
@@ -161,6 +163,13 @@ abstract class AbstractProvider<T extends AbstractModel> {
       remaining: headers['x-ratelimit-remaining'],
       reset: headers['x-ratelimit-reset'],
     );
+
+    /// https://developer.github.com/v3/#conditional-requests
+//    if (headers.containsKey('etag')) {
+//      // TODO - We'll need a database.
+//      String etag = headers['etag'];
+//      print('etag: $etag - uri: $uri');
+//    }
 
     if (headers.containsKey('link')) {
       List<String> links = headers['link'].split(',');

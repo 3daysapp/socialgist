@@ -12,7 +12,6 @@ platform :android do
     Dir.chdir("../../") do
       sh("flutter", "clean")
       sh("flutter", "pub", "get")
-      sh("flutter", "pub", "run", "flutter_launcher_icons:main")
       sh("screenshots", "--config=screenshots-android-en.yaml")
       sh("screenshots", "--config=screenshots-android-pt.yaml")
 #      sh("flutter", "clean")
@@ -32,7 +31,7 @@ platform :android do
     Dir.chdir("../../") do
       sh("flutter", "clean")
       sh("flutter", "pub", "get")
-      sh("flutter", "pub", "run", "flutter_launcher_icons:main")
+#      sh("flutter", "pub", "run", "flutter_launcher_icons:main")
       sh("screenshots", "--config=screenshots-android-en.yaml")
       sh("screenshots", "--config=screenshots-android-pt.yaml")
       sh("flutter", "clean")

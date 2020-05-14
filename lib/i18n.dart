@@ -116,6 +116,14 @@ final t = Translations('en_us') +
     {
       'en_us': 'Nobody around here.',
       'pt_br': 'Ninguém por aqui.',
+    } +
+    {
+      'en_us': 'Mute',
+      'pt_br': 'Silenciar',
+    }+
+    {
+      'en_us': 'Chatter',
+      'pt_br': 'Tagalerar',
     };
 
 ///

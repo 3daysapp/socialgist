@@ -5,6 +5,7 @@ import 'package:socialgist/i18n.dart';
 import 'package:socialgist/model/Gist.dart';
 import 'package:socialgist/provider/GistCommentProvider.dart';
 import 'package:socialgist/provider/GistProvider.dart';
+import 'package:socialgist/util/Config.dart';
 import 'package:socialgist/view/GistCommentList.dart';
 
 ///
@@ -73,14 +74,15 @@ class GistButtonBar extends StatelessWidget {
           ),
 
           /// Share
-          IconButton(
-            icon: FaIcon(FontAwesomeIcons.shareAlt),
-            tooltip: 'Share'.i18n,
-            onPressed: () => Share.share(
-              gist.htmlUrl,
-              subject: 'Shared from SocialGist'.i18n,
-            ),
-          )
+          if (!Config().isWeb)
+            IconButton(
+              icon: FaIcon(FontAwesomeIcons.shareAlt),
+              tooltip: 'Share'.i18n,
+              onPressed: () => Share.share(
+                gist.htmlUrl,
+                subject: 'Shared from SocialGist'.i18n,
+              ),
+            )
         ],
       ),
     );

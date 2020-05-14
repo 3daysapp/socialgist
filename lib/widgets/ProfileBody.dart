@@ -1,7 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:share/share.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socialgist/i18n.dart';
 import 'package:socialgist/model/User.dart';
 import 'package:socialgist/provider/AuthUserProvider.dart';
@@ -37,7 +39,9 @@ class ProfileBody extends StatefulWidget {
 ///
 class _ProfileBodyState extends State<ProfileBody> {
   final Color softWhite = Colors.white.withOpacity(0.5);
-  bool amIFollowing = true;
+  SharedPreferences prefs;
+  bool amIFollowing = false;
+  bool muted = false;
 
   ///
   ///
@@ -46,6 +50,7 @@ class _ProfileBodyState extends State<ProfileBody> {
   void initState() {
     super.initState();
     _followRefresh();
+    _muteRefresh();
   }
 
   ///
@@ -56,6 +61,15 @@ class _ProfileBodyState extends State<ProfileBody> {
       context: context,
     ).amIFollowing(widget.user);
     if (mounted) setState(() => amIFollowing = following);
+  }
+
+  ///
+  ///
+  ///
+  void _muteRefresh() async {
+    prefs = await SharedPreferences.getInstance();
+    List<String> mutedUsers = prefs.getStringList('mutedUsers') ?? [];
+    if (mounted) setState(() => muted = mutedUsers.contains(widget.user.login));
   }
 
   ///
@@ -155,7 +169,9 @@ class _ProfileBodyState extends State<ProfileBody> {
                                 ProfileHeroImage.show(
                                   context: context,
                                   tag: 'profilePhoto',
-                                  image: NetworkImage(widget.user.avatarUrl),
+                                  image: CachedNetworkImageProvider(
+                                    widget.user.avatarUrl,
+                                  ),
                                 );
                               },
                               child: CircleAvatar(
@@ -166,8 +182,9 @@ class _ProfileBodyState extends State<ProfileBody> {
                                   tag: 'profilePhoto',
                                   child: CircleAvatar(
                                     backgroundColor: Colors.black,
-                                    backgroundImage:
-                                        NetworkImage(widget.user.avatarUrl),
+                                    backgroundImage: CachedNetworkImageProvider(
+                                      widget.user.avatarUrl,
+                                    ),
                                     minRadius: 20.0,
                                     maxRadius: 50.0,
                                   ),
@@ -293,14 +310,15 @@ class _ProfileBodyState extends State<ProfileBody> {
 
               Padding(
                 padding: const EdgeInsets.only(top: 2.0),
-                child: ButtonBar(
-                  alignment: MainAxisAlignment.center,
+                child: Wrap(
+                  alignment: WrapAlignment.center,
                   children: <Widget>[
+                    /// Follow
                     if (widget.user.login != Config().me.login)
                       amIFollowing
                           ? FlatButton.icon(
                               icon: FaIcon(
-                                FontAwesomeIcons.userMinus,
+                                FontAwesomeIcons.solidUser,
                                 color: softWhite,
                               ),
                               label: Text('Following'.i18n),
@@ -324,17 +342,54 @@ class _ProfileBodyState extends State<ProfileBody> {
                                 _followRefresh();
                               },
                             ),
-                    FlatButton.icon(
-                      onPressed: () => Share.share(
-                        widget.user.htmlUrl,
-                        subject: 'Shared from SocialGist'.i18n,
+
+                    /// Share
+                    if (!Config().isWeb)
+                      FlatButton.icon(
+                        onPressed: () => Share.share(
+                          widget.user.htmlUrl,
+                          subject: 'Shared from SocialGist'.i18n,
+                        ),
+                        icon: FaIcon(
+                          FontAwesomeIcons.shareAlt,
+                          color: softWhite,
+                        ),
+                        label: Text('Share'.i18n),
                       ),
-                      icon: FaIcon(
-                        FontAwesomeIcons.shareAlt,
-                        color: softWhite,
-                      ),
-                      label: Text('Share'.i18n),
-                    ),
+
+                    /// Mute
+                    if (widget.user.login != Config().me.login)
+                      muted
+                          ? FlatButton.icon(
+                              icon: FaIcon(
+                                FontAwesomeIcons.volumeUp,
+                                color: softWhite,
+                              ),
+                              label: Text('Chatter'.i18n),
+                              onPressed: () async {
+                                List<String> mutedUsers =
+                                    prefs.getStringList('mutedUsers') ?? [];
+                                mutedUsers.remove(widget.user.login);
+                                await prefs.setStringList(
+                                    'mutedUsers', mutedUsers);
+                                _muteRefresh();
+                              },
+                            )
+                          : FlatButton.icon(
+                              icon: FaIcon(
+                                FontAwesomeIcons.volumeMute,
+                                color: softWhite,
+                              ),
+                              label: Text('Mute'.i18n),
+                              onPressed: () async {
+                                List<String> mutedUsers =
+                                    prefs.getStringList('mutedUsers') ?? [];
+                                mutedUsers.add(widget.user.login);
+                                await prefs.setStringList(
+                                    'mutedUsers', mutedUsers);
+                                _muteRefresh();
+                              },
+                            )
                   ],
                 ),
               ),
@@ -360,11 +415,19 @@ class _ProfileBodyState extends State<ProfileBody> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
-                                Text(
-                                  '${cards[key]['qtd']}',
-                                  style: TextStyle(
-                                    fontSize: 50.0,
-                                    color: Theme.of(context).accentColor,
+                                Flexible(
+                                  child: FittedBox(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(4.0),
+                                      child: Text(
+                                        '${cards[key]['qtd']}',
+                                        maxLines: 1,
+                                        style: TextStyle(
+                                          fontSize: 50.0,
+                                          color: Theme.of(context).accentColor,
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ),
                                 Text(

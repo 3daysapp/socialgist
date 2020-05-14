@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socialgist/i18n.dart';
 import 'package:socialgist/model/Gist.dart';
 import 'package:socialgist/provider/AbstractListProvider.dart';
@@ -45,7 +46,7 @@ class _GistListState extends State<GistList> {
   AbstractListProvider _providerHolder;
   ScrollController _scrollController;
   bool _loading = true;
-
+  List<String> _mutedUsers;
   Function _homeListener;
 
   ///
@@ -90,9 +91,18 @@ class _GistListState extends State<GistList> {
   ///
   Future<void> _initialData() async {
     if (mounted) setState(() => _loading = true);
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _mutedUsers = prefs.getStringList('mutedUsers') ?? [];
+
     List<Gist> gists = await _providerHolder.get();
     _gists.clear();
-    _gists.addAll({for (Gist gist in gists) gist.createdAt: gist});
+    for (Gist gist in gists) {
+      if (!_mutedUsers.contains(gist.owner.login)) {
+        _gists[gist.createdAt] = gist;
+      }
+    }
+
     if (mounted) _scrollController.jumpTo(0.0);
     if (mounted) setState(() => _loading = false);
   }
@@ -110,7 +120,8 @@ class _GistListState extends State<GistList> {
     while (oldKey == newKey && trying > 0) {
       List<Gist> gists = await _providerHolder.next();
       for (Gist gist in gists) {
-        if (gist.createdAtDate.isBefore(lastDate)) {
+        if (!_mutedUsers.contains(gist.owner.login) &&
+            gist.createdAtDate.isBefore(lastDate)) {
           _gists[gist.createdAt] = gist;
         }
       }
