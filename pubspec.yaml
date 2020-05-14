@@ -45,4 +45,4 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/images/web_hi_res_512.png
+    - assets/images/socialgist-logo-full.png
