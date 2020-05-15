@@ -25,7 +25,10 @@ class UserGist extends StatelessWidget {
   Widget build(BuildContext context) {
     return DefaultScaffold(
       subtitle: 'Gists'.i18n,
-      body: GistList(provider: provider),
+      body: GistList(
+        provider: provider,
+        defaultStarred: false,
+      ),
     );
   }
 }

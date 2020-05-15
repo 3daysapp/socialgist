@@ -91,7 +91,7 @@ final t = Translations('en_us') +
     } +
     {
       'en_us': 'Starred',
-      'pt_br': 'Estrelados',
+      'pt_br': 'Estrelado',
     } +
     {
       'en_us': 'Comment',
@@ -120,7 +120,7 @@ final t = Translations('en_us') +
     {
       'en_us': 'Mute',
       'pt_br': 'Silenciar',
-    }+
+    } +
     {
       'en_us': 'Chatter',
       'pt_br': 'Tagalerar',

@@ -14,11 +14,16 @@ import 'package:socialgist/widgets/GistHeader.dart';
 ///
 class GistCard extends StatefulWidget {
   final Gist gist;
+  final bool defaultStarred;
 
   ///
   ///
   ///
-  const GistCard(this.gist, {Key key}) : super(key: key);
+  const GistCard({
+    this.gist,
+    this.defaultStarred,
+    Key key,
+  }) : super(key: key);
 
   ///
   ///
@@ -77,13 +82,20 @@ class _GistCardState extends State<GistCard> with TickerProviderStateMixin {
                 if (localGist != null) {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (_) => GistDetail(localGist),
+                      builder: (_) => GistDetail(
+                        gist: localGist,
+                        defaultStarred: widget.defaultStarred,
+                      ),
                     ),
                   );
                 }
               },
             ),
-            GistButtonBar(widget.gist, _controller),
+            GistButtonBar(
+              gist: widget.gist,
+              controller: _controller,
+              defaultStarred: widget.defaultStarred,
+            ),
           ],
         ),
       ),

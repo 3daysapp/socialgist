@@ -13,11 +13,16 @@ import 'package:socialgist/widgets/GistHeader.dart';
 ///
 class GistDetail extends StatefulWidget {
   final Gist gist;
+  final bool defaultStarred;
 
   ///
   ///
   ///
-  const GistDetail(this.gist, {Key key}) : super(key: key);
+  const GistDetail({
+    this.gist,
+    this.defaultStarred,
+    Key key,
+  }) : super(key: key);
 
   ///
   ///
@@ -38,11 +43,6 @@ class _GistDetailState extends State<GistDetail> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-
-//    debugPrint(
-//      'Gist Detail: ${widget.gist.toJson()}',
-//      wrapWidth: 120,
-//    );
 
     _controller = AnimationController(
       duration: const Duration(milliseconds: 750),
@@ -71,7 +71,11 @@ class _GistDetailState extends State<GistDetail> with TickerProviderStateMixin {
                   ),
                 ),
               ),
-              GistButtonBar(widget.gist, _controller),
+              GistButtonBar(
+                gist: widget.gist,
+                controller: _controller,
+                defaultStarred: widget.defaultStarred,
+              ),
               ...widget.gist.files.map(
                 (file) => Padding(
                   padding: const EdgeInsets.only(top: 8.0),

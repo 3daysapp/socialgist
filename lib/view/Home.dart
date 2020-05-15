@@ -158,6 +158,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               perPage: 8,
             ),
             homeController: _homeController,
+            defaultStarred: false,
           ),
 
           /// User Starred Gists
@@ -166,6 +167,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               context: context,
             ),
             homeController: _homeController,
+            defaultStarred: true,
           ),
 
           /// User Profile
