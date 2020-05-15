@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:socialgist/model/Gist.dart';
 import 'package:socialgist/util/Config.dart';
+import 'package:socialgist/view/UserProfile.dart';
 
 ///
 ///
@@ -31,13 +32,21 @@ class GistHeader extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            CircleAvatar(
-              child: Config().test ? FaIcon(FontAwesomeIcons.solidSmile) : null,
-              backgroundImage: Config().test
-                  ? null
-                  : CachedNetworkImageProvider(gist.owner.avatarUrl),
-              backgroundColor: Colors.black54,
-              radius: 24.0,
+            GestureDetector(
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => UserProfile(gist.owner),
+                ),
+              ),
+              child: CircleAvatar(
+                child:
+                    Config().test ? FaIcon(FontAwesomeIcons.solidSmile) : null,
+                backgroundImage: Config().test
+                    ? null
+                    : CachedNetworkImageProvider(gist.owner.avatarUrl),
+                backgroundColor: Colors.black54,
+                radius: 24.0,
+              ),
             ),
           ],
         ),
