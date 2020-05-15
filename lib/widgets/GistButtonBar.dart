@@ -14,13 +14,15 @@ import 'package:socialgist/view/GistCommentList.dart';
 class GistButtonBar extends StatelessWidget {
   final Gist gist;
   final AnimationController controller;
+  final bool defaultStarred;
 
   ///
   ///
   ///
-  const GistButtonBar(
-    this.gist,
-    this.controller, {
+  const GistButtonBar({
+    @required this.gist,
+    @required this.controller,
+    @required this.defaultStarred,
     Key key,
   }) : super(key: key);
 
@@ -58,20 +60,35 @@ class GistButtonBar extends StatelessWidget {
           ),
 
           /// Star
-          IconButton(
-            icon: FaIcon(FontAwesomeIcons.star),
-            tooltip: 'Star'.i18n,
-            onPressed: () async {
-              try {
-                // ignore: unawaited_futures
-                GistProvider(context: context).star(gist);
-                await controller.forward().orCancel;
-                await controller.reverse().orCancel;
-              } on TickerCanceled {
-                // the animation got canceled, probably because we were disposed
-              }
-            },
-          ),
+          defaultStarred
+              ? IconButton(
+                  icon: FaIcon(FontAwesomeIcons.solidStar),
+                  tooltip: 'Starred'.i18n,
+                  onPressed: () async {
+                    try {
+                      // ignore: unawaited_futures
+                      GistProvider(context: context).unstar(gist);
+                      await controller.forward().orCancel;
+                      await controller.reverse().orCancel;
+                    } on TickerCanceled {
+                      // the animation got canceled, probably because we were disposed
+                    }
+                  },
+                )
+              : IconButton(
+                  icon: FaIcon(FontAwesomeIcons.star),
+                  tooltip: 'Star'.i18n,
+                  onPressed: () async {
+                    try {
+                      // ignore: unawaited_futures
+                      GistProvider(context: context).star(gist);
+                      await controller.forward().orCancel;
+                      await controller.reverse().orCancel;
+                    } on TickerCanceled {
+                      // the animation got canceled, probably because we were disposed
+                    }
+                  },
+                ),
 
           /// Share
           if (!Config().isWeb)

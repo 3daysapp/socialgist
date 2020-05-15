@@ -17,8 +17,9 @@ enum GistsType {
 ///
 ///
 class GistList extends StatefulWidget {
-  final ValueNotifier<HomeEvent> homeController;
   final AbstractListProvider provider;
+  final ValueNotifier<HomeEvent> homeController;
+  final bool defaultStarred;
 
   ///
   ///
@@ -27,6 +28,7 @@ class GistList extends StatefulWidget {
     Key key,
     @required this.provider,
     this.homeController,
+    @required this.defaultStarred,
   }) : super(key: key);
 
   ///
@@ -73,11 +75,15 @@ class _GistListState extends State<GistList> {
     if (widget.homeController != null) {
       _homeListener = () {
         if (widget.homeController.value == HomeEvent.gistsTabScrollTop) {
-          _scrollController.animateTo(
-            0.0,
-            duration: Duration(milliseconds: _gists.length * 50),
-            curve: Curves.easeInOut,
-          );
+          if (_gists.length > 100) {
+            _scrollController.jumpTo(0.0);
+          } else {
+            _scrollController.animateTo(
+              0.0,
+              duration: Duration(milliseconds: _gists.length * 50),
+              curve: Curves.easeInOut,
+            );
+          }
         }
       };
 
@@ -152,7 +158,8 @@ class _GistListState extends State<GistList> {
                   itemBuilder: (context, index) {
                     String key = _gists.keys.elementAt(index);
                     return GistCard(
-                      _gists[key],
+                      gist: _gists[key],
+                      defaultStarred: widget.defaultStarred,
                       key: Key(key),
                     );
                   },
@@ -168,7 +175,7 @@ class _GistListState extends State<GistList> {
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          Colors.black38,
+                          Colors.black26,
                           Colors.black87,
                         ],
                       ),
