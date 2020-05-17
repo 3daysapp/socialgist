@@ -520,7 +520,7 @@
 					"$(PROJECT_DIR)/Flutter",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = io.github.edufolly.socialgist;
-				PRODUCT_NAME = SocialGist;
+				PRODUCT_NAME = Runner;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
