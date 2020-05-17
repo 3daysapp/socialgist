@@ -36,7 +36,7 @@ class FutureBuilderFlow<T> extends StatelessWidget {
 
         if (snapshot.hasError) {
           return ColumnMessage(
-            errorMessage: snapshot.error,
+            errorMessage: snapshot.error.toString(),
           );
         }
 

@@ -1,8 +1,15 @@
+import 'dart:async';
+
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_analytics/observer.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:socialgist/Login.dart';
 import 'package:socialgist/util/Config.dart';
+
+FirebaseAnalytics analytics = FirebaseAnalytics();
 
 ///
 ///
@@ -20,7 +27,18 @@ void main() {
     _config.platform = Config.WEB;
   }
 
-  runApp(Socialgist());
+  if (debug) {
+    runApp(Socialgist());
+  } else {
+    Crashlytics.instance.enableInDevMode = false;
+    FlutterError.onError = Crashlytics.instance.recordFlutterError;
+
+    runZonedGuarded(() {
+      runApp(Socialgist());
+    }, (Object error, StackTrace stack) {
+      Crashlytics.instance.recordError(error, stack);
+    });
+  }
 }
 
 ///
@@ -57,6 +75,9 @@ class Socialgist extends StatelessWidget {
         message: message,
         authAgain: authAgain,
       ),
+      navigatorObservers: [
+        FirebaseAnalyticsObserver(analytics: analytics),
+      ],
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,

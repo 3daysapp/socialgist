@@ -127,7 +127,7 @@ class _GistCardState extends State<GistCard> with TickerProviderStateMixin {
 
         if (snapshot.hasError) {
           return ColumnMessage(
-            errorMessage: snapshot.error,
+            errorMessage: snapshot.error.toString(),
           );
         }
 
