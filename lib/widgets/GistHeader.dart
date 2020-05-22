@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:socialgist/model/Gist.dart';
@@ -43,7 +42,8 @@ class GistHeader extends StatelessWidget {
                     Config().test ? FaIcon(FontAwesomeIcons.solidSmile) : null,
                 backgroundImage: Config().test
                     ? null
-                    : CachedNetworkImageProvider(gist.owner.avatarUrl),
+                    : NetworkImage(gist.owner.avatarUrl),
+                // TODO - Need cache.
                 backgroundColor: Colors.black54,
                 radius: 24.0,
               ),

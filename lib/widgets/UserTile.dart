@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:socialgist/model/User.dart';
 import 'package:socialgist/view/UserProfile.dart';
@@ -22,7 +21,8 @@ class UserTile extends StatelessWidget {
     return ListTile(
       leading: CircleAvatar(
         backgroundColor: Colors.black54,
-        backgroundImage: CachedNetworkImageProvider(user.avatarUrl),
+        // TODO - Need cache.
+        backgroundImage: NetworkImage(user.avatarUrl),
       ),
       title: Text(user.name ?? user.login),
       subtitle: Text(
