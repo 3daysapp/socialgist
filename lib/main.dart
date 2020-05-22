@@ -9,8 +9,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:socialgist/Login.dart';
 import 'package:socialgist/util/Config.dart';
 
-FirebaseAnalytics analytics = FirebaseAnalytics();
-
 ///
 ///
 ///
@@ -76,7 +74,7 @@ class Socialgist extends StatelessWidget {
         authAgain: authAgain,
       ),
       navigatorObservers: [
-        FirebaseAnalyticsObserver(analytics: analytics),
+        FirebaseAnalyticsObserver(analytics: FirebaseAnalytics()),
       ],
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,

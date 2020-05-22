@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:socialgist/model/User.dart';
 import 'package:socialgist/view/UserProfile.dart';
 
+///
+///
+///
 class UserTile extends StatelessWidget {
   final User user;
 

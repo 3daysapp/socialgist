@@ -7,6 +7,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socialgist/Login.dart';
 import 'package:socialgist/model/AbstractModel.dart';
 import 'package:socialgist/model/ApiUsage.dart';
+import 'package:socialgist/model/Cache.dart';
+import 'package:socialgist/provider/CacheProvider.dart';
 import 'package:socialgist/util/Config.dart';
 
 ///
@@ -124,89 +126,143 @@ abstract class AbstractProvider<T extends AbstractModel> {
   ) async {
     Uri uri = _internalUri(path, qs);
 
-    http.Response response = await http.get(
-      uri,
-      headers: _headers,
-    );
+    CacheProvider cacheProvider = CacheProvider();
 
-    if (response.statusCode != 200 && Config().debug) {
-      print('Get Status Code: ${response.statusCode}');
+    Cache cache = await cacheProvider.hasCache('GET', uri.toString());
+//    print('Get Cache: $cache');
+
+    Map<String, String> requestHeaders = Map.from(_headers);
+
+    if (cache != null) {
+      if (cache.etag != null && cache.etag.isNotEmpty) {
+        requestHeaders['If-None-Match'] = cache.etag;
+      }
+
+      if (cache.lastModified != null && cache.lastModified.isNotEmpty) {
+        requestHeaders['If-Modified-Since'] = cache.lastModified;
+      }
     }
 
-    if (response.statusCode == 401 || response.statusCode == 403) {
-      var errorBody = json.decode(response.body);
-      String message = errorBody['message'] ?? 'Unknown error.';
+    String responseBody;
 
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-
-      await prefs.clear();
-
-      await Navigator.of(_context).pushAndRemoveUntil(
-        MaterialPageRoute(
-          builder: (context) => Login(
-            message: '$message. (${response.statusCode})',
-            authAgain: response.statusCode == 401,
-          ),
-        ),
-        (_) => false,
+    try {
+      http.Response response = await http.get(
+        uri,
+        headers: requestHeaders,
       );
-      return;
-    }
 
-    Map<String, String> headers = response.headers;
+      if (![200, 204, 304].contains(response.statusCode) && Config().debug) {
+        print('Get Status Code: ${response.statusCode} => $uri');
+      }
+
+      if ([401, 403].contains(response.statusCode)) {
+        var errorBody = json.decode(response.body);
+        String message = errorBody['message'] ?? 'Unknown error.';
+
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+
+        await prefs.clear();
+
+        await Navigator.of(_context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (context) => Login(
+              message: '$message. (${response.statusCode})',
+              authAgain: response.statusCode == 401,
+            ),
+          ),
+          (_) => false,
+        );
+        return;
+      }
+
+      Map<String, String> headers = response.headers;
 
 //    print('Headers:');
 //    headers.forEach((key, value) => print('$key => $value'));
 
-    Config().apiUsage = ApiUsage(
-      limit: headers['x-ratelimit-limit'],
-      remaining: headers['x-ratelimit-remaining'],
-      reset: headers['x-ratelimit-reset'],
-    );
+      if (headers.containsKey('x-ratelimit-limit') &&
+          headers.containsKey('x-ratelimit-remaining') &&
+          headers.containsKey('x-ratelimit-reset')) {
+        Config().apiUsage = ApiUsage(
+          limit: headers['x-ratelimit-limit'],
+          remaining: headers['x-ratelimit-remaining'],
+          reset: headers['x-ratelimit-reset'],
+        );
+      }
 
-    /// https://developer.github.com/v3/#conditional-requests
-//    if (headers.containsKey('etag')) {
-//      // TODO - We'll need a database.
-//      String etag = headers['etag'];
-//      print('etag: $etag - uri: $uri');
-//    }
+      if (headers.containsKey('link')) {
+        List<String> links = headers['link'].split(',');
 
-    if (headers.containsKey('link')) {
-      List<String> links = headers['link'].split(',');
+        for (String link in links) {
+          List<String> parts = link.split(';');
 
-      for (String link in links) {
-        List<String> parts = link.split(';');
+          if (parts.length > 1) {
+            String url = parts[0].trim();
+            url = url.substring(1, url.length - 1);
 
-        if (parts.length > 1) {
-          String url = parts[0].trim();
-          url = url.substring(1, url.length - 1);
+            Uri uri = Uri.parse(url);
+            int number = int.parse(uri.queryParameters['page']);
 
-          Uri uri = Uri.parse(url);
-          int number = int.parse(uri.queryParameters['page']);
+            String name = parts[1].trim();
 
-          String name = parts[1].trim();
-
-          if (number != null) {
-            switch (name) {
-              case 'rel="first"':
-                _first = number;
-                break;
-              case 'rel="prev"':
-                _prev = number;
-                break;
-              case 'rel="next"':
-                _next = number;
-                break;
-              case 'rel="last"':
-                _last = number;
-                break;
+            if (number != null) {
+              switch (name) {
+                case 'rel="first"':
+                  _first = number;
+                  break;
+                case 'rel="prev"':
+                  _prev = number;
+                  break;
+                case 'rel="next"':
+                  _next = number;
+                  break;
+                case 'rel="last"':
+                  _last = number;
+                  break;
+              }
             }
           }
         }
       }
+
+      cache ??= Cache(method: 'GET', url: uri.toString());
+
+      bool saveCache = false;
+
+      if (headers.containsKey('etag')) {
+        cache.etag = headers['etag'];
+        saveCache = true;
+      }
+
+      if (headers.containsKey('last-modified')) {
+        cache.lastModified = headers['last-modified'];
+        saveCache = true;
+      }
+
+      if (response.statusCode == 304) {
+        responseBody = cache.response;
+        cache.hit++;
+      } else {
+        responseBody = response.body;
+        cache.response = response.body;
+        cache.hit = 0;
+      }
+
+      if (saveCache) {
+//        print('Save Cache: $cache');
+        await cacheProvider.saveOrUpdate(cache);
+      }
+    } catch (exception) {
+      if (cache != null &&
+          cache.response != null &&
+          cache.response.isNotEmpty) {
+        responseBody = cache.response;
+      } else {
+        rethrow;
+      }
     }
 
-    var body = json.decode(response.body);
+    var body = json.decode(responseBody);
 
 //    print('Body:');
 
@@ -349,6 +405,6 @@ abstract class AbstractProvider<T extends AbstractModel> {
       headers: headers,
     );
 
-    return response.statusCode == 204;
+    return [204, 304].contains(response.statusCode);
   }
 }

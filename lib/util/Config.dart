@@ -1,6 +1,9 @@
 import 'package:socialgist/model/ApiUsage.dart';
 import 'package:socialgist/model/User.dart';
 
+///
+///
+///
 class Config {
   static final String WEB = 'web';
 
