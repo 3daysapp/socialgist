@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_analytics/observer.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -12,44 +13,43 @@ import 'package:socialgist/util/Config.dart';
 ///
 ///
 ///
-void main() {
+void main() async {
   bool debug = false;
-
   assert(debug = true);
-
   Config _config = Config();
-
   _config.debug = debug;
+
+  WidgetsFlutterBinding.ensureInitialized();
 
   if (kIsWeb) {
     _config.platform = Config.WEB;
   }
 
-  if (debug) {
-    runApp(Socialgist());
-  } else {
-    Crashlytics.instance.enableInDevMode = false;
-    FlutterError.onError = Crashlytics.instance.recordFlutterError;
+  await Firebase.initializeApp();
 
-    runZonedGuarded(() {
-      runApp(Socialgist());
-    }, (Object error, StackTrace stack) {
-      Crashlytics.instance.recordError(error, stack);
-    });
+  if (debug) {
+    runApp(SocialGist());
+  } else {
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+
+    runZonedGuarded(
+          () => runApp(SocialGist()),
+      FirebaseCrashlytics.instance.recordError,
+    );
   }
 }
 
 ///
 ///
 ///
-class Socialgist extends StatelessWidget {
+class SocialGist extends StatelessWidget {
   final String message;
   final bool authAgain;
 
   ///
   ///
   ///
-  const Socialgist({
+  const SocialGist({
     Key key,
     this.message,
     this.authAgain = false,

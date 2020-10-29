@@ -17,10 +17,26 @@
   <title>SocialGist</title>
   <link rel="manifest" href="manifest.json">
 </head>
-<body>
-  <!-- This script installs service_worker.js to provide PWA functionality to
-       application. For more information, see:
-       https://developers.google.com/web/fundamentals/primers/service-workers -->
+<body style="background-color:black;">
+  <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-analytics.js"></script>
+
+  <script>
+    var firebaseConfig = {
+      apiKey: "AIzaSyAdtZX_YuWCOgQVHtDzMrmQmaiT13_80ZI",
+      authDomain: "social-gist-2020.firebaseapp.com",
+      databaseURL: "https://social-gist-2020.firebaseio.com",
+      projectId: "social-gist-2020",
+      storageBucket: "social-gist-2020.appspot.com",
+      messagingSenderId: "157432013721",
+      appId: "1:157432013721:web:690eb91896ea1fafef2908",
+      measurementId: "G-VNFNWLJNJ7"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+  </script>
+
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {
@@ -28,6 +44,8 @@
       });
     }
   </script>
+
   <script src="main.dart.js" type="application/javascript"></script>
 </body>
+
 </html>
