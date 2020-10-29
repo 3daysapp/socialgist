@@ -7,8 +7,8 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:socialgist/Login.dart';
-import 'package:socialgist/util/Config.dart';
+import 'package:socialgist/login.dart';
+import 'package:socialgist/util/config.dart';
 
 ///
 ///
