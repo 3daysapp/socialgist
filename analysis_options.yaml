@@ -5,6 +5,6 @@ linter:
     # always_specify_types: true
     omit_local_variable_types: false
 
-analyzer:
-  enable-experiment:
-    - extension-methods
+#analyzer:
+#  enable-experiment:
+#    - extension-methods
